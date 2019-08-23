@@ -18,26 +18,26 @@ class HorizontalListItem extends StatelessWidget {
         color: GREY_COLOR,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.asset("assets/images/Rectangle.png"),
-          Container(margin: EdgeInsets.only(left: 10)),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(bottom: 20),
-                width: 220,
-                child: Text(
+          Image.asset("assets/images/Rectangle.png", width: 80, height: 80),
+          Container(
+            padding: EdgeInsets.only(bottom: 20, left: 10),
+            width: MediaQuery.of(context).size.width / 1.8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
                   "$name",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              priceWidget(mrpPrice, context),
-              priceWidget(currentPrice, context, currentPrice: true),
-            ],
+                priceWidget(mrpPrice, context),
+                priceWidget(currentPrice, context, currentPrice: true),
+              ],
+            ),
           ),
         ],
       ),
@@ -45,8 +45,8 @@ class HorizontalListItem extends StatelessWidget {
   }
 
   Widget priceWidget(String price, context, {bool currentPrice = false}) {
-    return Container(
-      width: MediaQuery.of(context).size.width - 185,
+    return Align(
+      alignment: Alignment.bottomRight,
       child: Text(
         "$price",
         textAlign: TextAlign.right,

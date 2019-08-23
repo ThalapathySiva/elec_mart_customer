@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 
 class TeritoryButton extends StatelessWidget {
   final String text;
+  final Function onpressed;
 
-  TeritoryButton({this.text});
+  TeritoryButton({this.text, this.onpressed});
   @override
   Widget build(BuildContext context) {
     return FlatButton(
       color: WHITE_COLOR,
-      onPressed: () {},
+      onPressed: onpressed,
       child: Text(
         "$text",
         style: TextStyle(

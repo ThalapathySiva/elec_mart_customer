@@ -11,7 +11,7 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: GREY_COLOR,
@@ -20,18 +20,11 @@ class VerticalListItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.asset(
-            "assets/images/Rectangle.png",
-          ),
-          Container(
-            width: 140,
-            child: Text(
-              "$name",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+          Image.asset("assets/images/Rectangle.png", width: 110, height: 110),
+          Text(
+            "$name",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
           priceWidget(mrpPrice),
           priceWidget(currentPrice, currentPrice: true),

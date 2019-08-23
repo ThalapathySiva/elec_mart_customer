@@ -21,11 +21,12 @@ class VendorDetail extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  vendorText(name, primary: true),
+                  vendorText(name, context, primary: true),
                   Container(margin: EdgeInsets.only(top: 5)),
-                  vendorText(address),
+                  vendorText(address, context),
+                  Container(margin: EdgeInsets.only(top: 15)),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width - 125,
+                    width: MediaQuery.of(context).size.width - 150,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -45,15 +46,18 @@ class VendorDetail extends StatelessWidget {
     );
   }
 
-  Widget vendorText(String text, {bool primary = false}) {
-    return Text(
-      "$text",
-      style: TextStyle(
-        fontSize: primary ? 18 : 12,
-        fontWeight: FontWeight.bold,
-        color: !primary ? LIGHT_BLACK_COLOR : null,
+  Widget vendorText(String text, context, {bool primary = false}) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 1.7,
+      child: Text(
+        "$text",
+        style: TextStyle(
+          fontSize: primary ? 18 : 12,
+          fontWeight: FontWeight.bold,
+          color: !primary ? LIGHT_BLACK_COLOR : null,
+        ),
+        textAlign: TextAlign.left,
       ),
-      textAlign: TextAlign.left,
     );
   }
 }

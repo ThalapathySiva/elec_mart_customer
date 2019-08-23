@@ -40,9 +40,7 @@ class VerticalNewItem extends StatelessWidget {
         child: Text(
           "NEW",
           style: TextStyle(
-              color: WHITE_COLOR,
-              fontSize: 12,
-              fontWeight: FontWeight.bold),
+              color: WHITE_COLOR, fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ),
     );
