@@ -2,7 +2,13 @@ import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/screens/graphql/updateCustomerAddress.dart';
+import 'package:elec_mart_customer/screens/nav_screens.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 class EditAddress extends StatefulWidget {
   @override
@@ -10,6 +16,14 @@ class EditAddress extends StatefulWidget {
 }
 
 class _EditAddressState extends State<EditAddress> {
+  Map input = {
+    "Name": "",
+    "Mobile Number": "",
+    "Address": "",
+    "Landmark": "",
+    "City": ""
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,38 +63,51 @@ class _EditAddressState extends State<EditAddress> {
       child: Column(
         children: <Widget>[
           CustomTextField(
-            labelText: "Flat/Building",
-            onChanged: (val) {},
+            labelText: "Name",
+            onChanged: (val) {
+              input['Name'] = val;
+            },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "Street/Locality",
-            onChanged: (val) {},
+            onChanged: (val) {
+              input['Address'] = val;
+            },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "Landmark",
-            onChanged: (val) {},
+            onChanged: (val) {
+              input['Landmark'] = val;
+            },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "City",
-            onChanged: (val) {},
+            onChanged: (val) {
+              input['City'] = val;
+            },
           ),
           SizedBox(height: 20),
           CustomTextField(
+            isNumeric: true,
             labelText: "Phone Number",
-            onChanged: (val) {},
+            onChanged: (val) {
+              input['Mobile Number'] = val;
+            },
           ),
           SizedBox(height: 50),
-          Container(
-            height: 50,
-            width: 360,
-            child: PrimaryButtonWidget(
-              buttonText: "Save Changes",
-              onPressed: () {},
-            ),
-          )
+          if (input['Name'] != "" &&
+              input['Mobile Number'] != "" &&
+              input['Address'] != "" &&
+              input['Landmark'] != "" &&
+              input['City'] != "")
+            Container(
+              height: 50,
+              width: 360,
+              child: mutationComponent(),
+            )
         ],
       ),
     );
@@ -94,6 +121,48 @@ class _EditAddressState extends State<EditAddress> {
           fontSize: size,
           fontWeight: isBold ? FontWeight.bold : null),
       textAlign: TextAlign.center,
+    );
+  }
+
+  Widget mutationComponent() {
+    final appState = Provider.of<AppState>(context);
+    return Mutation(
+      options: MutationOptions(
+        document: updateCustomerAddress,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return result.loading
+            ? Center(child: CupertinoActivityIndicator())
+            : PrimaryButtonWidget(
+                buttonText: "Save Changes",
+                onPressed: () {
+                  runMutation({
+                    "address": {
+                      "name": input['Name'],
+                      "phoneNumber": input['Mobile Number'],
+                      "addressLine": input["Address"],
+                      "landmark": input["Landmark"],
+                      "city": input['City']
+                    }
+                  });
+                },
+              );
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => NavigateScreens()));
+      },
     );
   }
 }

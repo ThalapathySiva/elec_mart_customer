@@ -4,21 +4,13 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 class SecondaryButton extends StatelessWidget {
   final String buttonText;
   final Function onPressed;
-  final double buttonHeight, buttonWidth;
   final IconData icon;
 
-  SecondaryButton(
-      {this.buttonText,
-      this.onPressed,
-      this.buttonHeight,
-      this.buttonWidth,
-      this.icon});
+  SecondaryButton({this.buttonText, this.onPressed, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: buttonHeight,
-      width: buttonWidth,
       child: OutlineButton(
           onPressed: onPressed,
           borderSide: BorderSide(color: PRIMARY_COLOR, width: 1.5),

@@ -1,13 +1,25 @@
 import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/cart_item.dart';
-import 'package:elec_mart_customer/components/screen_indicator.dart';
+import 'package:elec_mart_customer/components/order_status_component.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
-import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/components/vendor_detail_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/constants/strings.dart';
+import 'package:elec_mart_customer/models/OrderModel.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+
+import 'graphql/change_order_status.dart';
+import 'nav_screens.dart';
 
 class OrderDetail extends StatefulWidget {
+  final OrderModel order;
+
+  OrderDetail({this.order});
+
   @override
   _OrderDetailState createState() => _OrderDetailState();
 }
@@ -27,11 +39,29 @@ class _OrderDetailState extends State<OrderDetail> {
           AppTitleWidget(),
           firstRow(),
           secondRow(),
+          if (widget.order.paymentMode != "Cash On Delivery")
+            Container(
+                padding: EdgeInsets.only(right: 24),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      text(
+                          widget.order.transactionSuccess
+                              ? "Transaction Success"
+                              : "Transaction Failed",
+                          14,
+                          widget.order.transactionSuccess
+                              ? Colors.green
+                              : Colors.red,
+                          true)
+                    ])),
           firstColumn(),
           itemsInOrder(),
           address(),
-          vendor(),
-          finalColumn(),
+          if (widget.order.status.toUpperCase() ==
+                  OrderStatuses.PLACED_BY_CUSTOMER &&
+              widget.order.transactionSuccess != false)
+            mutationComponent()
         ],
       ),
     );
@@ -40,21 +70,11 @@ class _OrderDetailState extends State<OrderDetail> {
   Widget firstRow() {
     return Container(
       padding: EdgeInsets.all(24),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              text("Order ID. 3454", 16, BLACK_COLOR, true),
-              text("Rs. 3,45,560", 24, PRIMARY_COLOR, true),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              text("Cash on Delivery", 14, PRIMARY_COLOR, true)
-            ],
-          )
+          text("Order ID. ${widget.order.orderNo}", 16, BLACK_COLOR, true),
+          text("Rs. ${widget.order.getTotalPrice()}", 24, PRIMARY_COLOR, true),
         ],
       ),
     );
@@ -67,16 +87,8 @@ class _OrderDetailState extends State<OrderDetail> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           text("ORDER STATUS", 12, PRIMARY_COLOR, true),
-          Row(
-            children: <Widget>[
-              ScreenIndicator(color: PRIMARY_COLOR),
-              SizedBox(width: 5),
-              ScreenIndicator(color: PRIMARY_COLOR),
-              SizedBox(width: 5),
-              ScreenIndicator(color: LIGHT_BLUE_COLOR),
-              SizedBox(width: 5),
-              ScreenIndicator(color: LIGHT_BLUE_COLOR)
-            ],
+          OrderStatusIndicatorWidget(
+            orderStatus: widget.order.status.toString().toUpperCase(),
           ),
         ],
       ),
@@ -89,10 +101,11 @@ class _OrderDetailState extends State<OrderDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          text("Waiting for store confirmation", 20, PRIMARY_COLOR, true),
+          text("${widget.order.status.split('_').join(" ").toLowerCase()}", 20,
+              PRIMARY_COLOR, true),
           SizedBox(height: 5),
           text(
-              "We’re waiting for the store to confirm your order. Once confirmed, your order will be packaged and shipped.",
+              StringResolver.getTextForOrderStatus(status: widget.order.status),
               14,
               BLACK_COLOR,
               false),
@@ -120,11 +133,12 @@ class _OrderDetailState extends State<OrderDetail> {
       physics: ScrollPhysics(),
       separatorBuilder: (context, index) => SizedBox(height: 10),
       shrinkWrap: true,
-      itemCount: 3,
+      itemCount: widget.order.cartItems.length,
       itemBuilder: (context, index) {
         return CartItem(
-          name: "Apple iPhone X - 64 GB, Rose Gold",
-          currentPrice: "Rs. 194,500",
+          imageUrl: "${widget.order.cartItems[index].imageURL}",
+          name: "${widget.order.cartItems[index].name}",
+          currentPrice: "Rs. ${widget.order.cartItems[index].price}",
         );
       },
     );
@@ -138,9 +152,10 @@ class _OrderDetailState extends State<OrderDetail> {
         children: <Widget>[
           text("SOLD BY", 12, PRIMARY_COLOR, true),
           VendorDetail(
-            name: "Vendor Name",
-            address: "Vendor Address",
-          )
+              adminPhoneNumber: "${widget.order.vendor.adminPhonenumber}",
+              name: "${widget.order.vendor.storeName}",
+              address:
+                  "${widget.order.vendor.address['addressLine']} \n  ${widget.order.vendor.address['city']}")
         ],
       ),
     );
@@ -154,40 +169,51 @@ class _OrderDetailState extends State<OrderDetail> {
         children: <Widget>[
           text("SHIPPING ADDRESS", 12, PRIMARY_COLOR, true),
           SizedBox(height: 10),
-          text("Mr. Vineesh 10/45,", 14, BLACK_COLOR, true),
-          text("10/45, ABC Street, Lorem Ipsum,", 14, BLACK_COLOR, true),
-          text("Coimbatore - 456067", 14, BLACK_COLOR, true),
-          text("+91 8898896969", 14, PRIMARY_COLOR, true),
+          text("${widget.order.address.name}", 14, BLACK_COLOR, true),
+          text("${widget.order.address.addressLine},", 14, BLACK_COLOR, true),
+          text("${widget.order.address.city}", 14, BLACK_COLOR, true),
+          text("${widget.order.address.phoneNumber}", 14, PRIMARY_COLOR, true),
         ],
       ),
     );
   }
 
-  Widget finalColumn() {
+  Widget finalColumn(RunMutation runMutation) {
     return Container(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          InkWell(
-              onTap: () {},
-              child: text("ORDER ACTIONS", 12, PRIMARY_COLOR, true)),
-          SizedBox(height: 10),
-          Row(
-            children: <Widget>[
-              SecondaryButton(
-                buttonText: "Call Vendor",
-                onPressed: () {},
-              ),
-              TeritoryButton(
-                text: "Cancel Order",
-                onpressed: () {},
-              )
-            ],
-          )
-        ],
-      ),
-    );
+        padding: EdgeInsets.all(24),
+        child: Center(
+            child: SecondaryButton(
+                buttonText: "Cancel Order",
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text(
+                                "Are you sure you want to cancel this order ?"),
+                            actions: <Widget>[
+                              FlatButton(
+                                  child: Text("No"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }),
+                              FlatButton(
+                                child: Text("Yes"),
+                                onPressed: () {
+                                  runMutation({
+                                    "status":
+                                        OrderStatuses.CANCELLED_BY_CUSTOMER,
+                                    "orderId": "${widget.order.id}"
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NavigateScreens()));
+                                },
+                              )
+                            ],
+                          ));
+                })));
   }
 
   Widget text(String title, double size, Color color, bool isBold) {
@@ -197,6 +223,33 @@ class _OrderDetailState extends State<OrderDetail> {
           color: color,
           fontSize: size,
           fontWeight: isBold ? FontWeight.bold : null),
+    );
+  }
+
+  Widget mutationComponent() {
+    final appState = Provider.of<AppState>(context);
+
+    return Mutation(
+      options: MutationOptions(
+        document: changeOrder,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return result.loading
+            ? Center(child: CupertinoActivityIndicator())
+            : finalColumn(runMutation);
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {},
     );
   }
 }

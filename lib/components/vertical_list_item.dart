@@ -4,9 +4,16 @@ import 'package:flutter/material.dart';
 class VerticalListItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
   final bool showBorder;
+  final String imageURL;
+  final String id;
 
   VerticalListItem(
-      {this.name, this.currentPrice, this.mrpPrice, this.showBorder = false});
+      {this.id,
+      this.name,
+      this.currentPrice,
+      this.mrpPrice,
+      this.imageURL,
+      this.showBorder = false});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,9 @@ class VerticalListItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.asset("assets/images/Rectangle.png", width: 110, height: 110),
+          Hero(
+              tag: id,
+              child: Image.network("$imageURL", width: 110, height: 110)),
           Text(
             "$name",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -35,7 +44,7 @@ class VerticalListItem extends StatelessWidget {
 
   Widget priceWidget(String price, {bool currentPrice = false}) {
     return Text(
-      "$price",
+      "Rs $price",
       style: TextStyle(
           fontSize: currentPrice ? 16 : 12,
           color: currentPrice ? PRIMARY_COLOR : RED_COLOR,

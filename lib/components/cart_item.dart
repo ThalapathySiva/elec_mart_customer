@@ -1,15 +1,26 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartItem extends StatelessWidget {
   final String name, currentPrice;
   final bool canDelete;
+  final String imageUrl;
+  final String id;
 
-  CartItem({this.name, this.currentPrice, this.canDelete = false});
+  CartItem(
+      {this.id,
+      this.imageUrl,
+      this.name,
+      this.currentPrice,
+      this.canDelete = false});
 
   @override
   Widget build(BuildContext context) {
+    final cartState = Provider.of<CartState>(context);
+
     return Container(
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -18,8 +29,8 @@ class CartItem extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          Image.asset(
-            "assets/images/mobile.png",
+          Image.network(
+            "$imageUrl",
             width: 80,
           ),
           Container(margin: EdgeInsets.only(left: 10)),
@@ -40,7 +51,9 @@ class CartItem extends StatelessWidget {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        cartState.removeCartItem("$id");
+                      },
                       icon: Icon(
                         FeatherIcons.trash2,
                         color: PRIMARY_COLOR,

@@ -1,11 +1,21 @@
+import 'dart:convert';
 import 'package:elec_mart_customer/components/cart_item.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/edit_address.dart';
+import 'package:elec_mart_customer/screens/graphql/create_new_order.dart';
 import 'package:elec_mart_customer/screens/order_placed.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'graphql/getCustomerInfo.dart';
 
 class Cart extends StatefulWidget {
   @override
@@ -13,6 +23,9 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
+  bool isTickCreditCard = false;
+  bool isTickCOD = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,54 +34,65 @@ class _CartState extends State<Cart> {
   }
 
   Widget layout() {
+    final cartState = Provider.of<CartState>(context);
     return Container(
       child: ListView(
         children: <Widget>[
           listItems(),
           totalRow(),
           Container(height: 3, color: GREY_COLOR),
-          address(),
+          getAddressQuery(),
           Container(height: 3, color: GREY_COLOR),
-          Container(
-            padding: EdgeInsets.all(24),
-            child: PrimaryButtonWidget(
-              buttonText: "Proceed to Payment",
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => OrderPlaced()));
-              },
-            ),
-          )
+          paymentMode(),
+          if (isTickCOD || isTickCreditCard && cartState.cartItems.length != 0)
+            Container(
+              padding: EdgeInsets.all(24),
+              child: mutationComponent(),
+            )
         ],
       ),
     );
   }
 
   Widget listItems() {
-    return ListView.separated(
-      physics: ScrollPhysics(),
-      padding: EdgeInsets.all(24),
-      separatorBuilder: (context, index) => SizedBox(height: 10),
-      shrinkWrap: true,
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return CartItem(
-          name: "Apple iPhone X - 64 GB, Rose Gold",
-          currentPrice: "Rs. 194,500",
-          canDelete: true,
-        );
-      },
-    );
+    final cartState = Provider.of<CartState>(context);
+
+    return cartState.cartItems.length == 0
+        ? Container(
+            height: 200,
+            child: Center(
+                child: Text(
+              "No Items found",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
+          )
+        : ListView.separated(
+            physics: ScrollPhysics(),
+            padding: EdgeInsets.all(24),
+            separatorBuilder: (context, index) => SizedBox(height: 10),
+            shrinkWrap: true,
+            itemCount: cartState.cartItems.length,
+            itemBuilder: (context, index) {
+              return CartItem(
+                  imageUrl: "${cartState.cartItems[index]["imageUrl"]}",
+                  name: "${cartState.cartItems[index]["name"]}",
+                  currentPrice: "${cartState.cartItems[index]["price"]}",
+                  canDelete: true,
+                  id: "${cartState.cartItems[index]["itemId"]}");
+            },
+          );
   }
 
   Widget totalRow() {
+    final cartState = Provider.of<CartState>(context);
+
     return Container(
       padding: EdgeInsets.all(24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           text("Total", 16, BLACK_COLOR, true),
-          text("Rs. 3,45,560", 20, PRIMARY_COLOR, true)
+          text("Rs ${cartState.totalPrice}", 20, PRIMARY_COLOR, true)
         ],
       ),
     );
@@ -84,7 +108,71 @@ class _CartState extends State<Cart> {
     );
   }
 
-  Widget address() {
+  Widget paymentMode() {
+    return Container(
+      padding: EdgeInsets.all(24),
+      child: Column(
+        children: <Widget>[
+          Row(children: <Widget>[
+            Icon(FeatherIcons.dollarSign, size: 20),
+            SizedBox(width: 10),
+            text("Payment Mode", 16, BLACK_COLOR, true)
+          ]),
+          SizedBox(height: 20),
+          InkWell(
+              onTap: () {
+                setState(() {
+                  isTickCreditCard = true;
+                  isTickCOD = false;
+                });
+              },
+              child: paymentType(FeatherIcons.creditCard, "Credit/Debit Card",
+                  isTickCreditCard)),
+          SizedBox(height: 20),
+          InkWell(
+              onTap: () {
+                setState(() {
+                  isTickCOD = true;
+                  isTickCreditCard = false;
+                });
+              },
+              child: paymentType(
+                  FeatherIcons.package, "Cash On Delivery", isTickCOD))
+        ],
+      ),
+    );
+  }
+
+  Widget paymentType(IconData icon, String text, bool check) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Icon(icon, size: 20),
+          Text(text, style: TextStyle(color: PRIMARY_COLOR, fontSize: 16)),
+          check
+              ? Icon(
+                  FeatherIcons.checkCircle,
+                  size: 16,
+                  color: PRIMARY_COLOR,
+                )
+              : Container(),
+        ],
+      ),
+    );
+  }
+
+  Widget addressWidget(QueryResult result) {
+    if (result.data == null ||
+        result.data["getCustomerInfo"] == null ||
+        result.data["getCustomerInfo"]["user"] == null ||
+        result.data["getCustomerInfo"]["user"]["address"] == null) {
+      return Container();
+    }
+    String addressString = result.data["getCustomerInfo"]["user"]["address"];
+    Map address = jsonDecode(addressString);
+
     return Container(
       padding: EdgeInsets.all(24),
       child: Column(
@@ -110,12 +198,92 @@ class _CartState extends State<Cart> {
               )
             ],
           ),
-          text("Mr. Vineesh 10/45,", 14, BLACK_COLOR, true),
-          text("10/45, ABC Street, Lorem Ipsum,", 14, BLACK_COLOR, true),
-          text("Coimbatore - 456067", 14, BLACK_COLOR, true),
-          text("+91 8898896969", 14, BLACK_COLOR, true),
+          text("${address["name"]}", 14, BLACK_COLOR, true),
+          text("${address["addressLine"]}", 14, BLACK_COLOR, true),
+          text("${address["city"]}", 14, BLACK_COLOR, true),
+          text("${address["phoneNumber"]}", 14, BLACK_COLOR, true),
         ],
       ),
+    );
+  }
+
+  Widget getAddressQuery() {
+    final appState = Provider.of<AppState>(context);
+
+    return Query(
+      options: QueryOptions(
+        document: getCustomerInfo,
+        fetchPolicy: FetchPolicy.noCache,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+        pollInterval: 1,
+      ),
+      builder: (QueryResult result, {VoidCallback refetch}) {
+        return result.loading
+            ? Center(child: CupertinoActivityIndicator())
+            : addressWidget(result);
+      },
+    );
+  }
+
+  Widget mutationComponent() {
+    final cartState = Provider.of<CartState>(context);
+    final appState = Provider.of<AppState>(context);
+    return Mutation(
+      options: MutationOptions(
+        document: createNewOrder,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return result.loading
+            ? Center(child: CupertinoActivityIndicator())
+            : PrimaryButtonWidget(
+                buttonText: "Proceed to Payment",
+                onPressed: () {
+                  runMutation({
+                    "paymentMode":
+                        isTickCOD ? "Cash On Delivery" : "Credit/Debit Card",
+                    "cartItemIds": cartState.cartItems
+                        .map((item) => item['itemId'])
+                        .toList(),
+                  });
+                },
+              );
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {
+        final Map order = resultData["createNewOrder"]["orders"][0];
+        if (isTickCreditCard) {
+          launch(
+              "http://cezhop.herokuapp.com/paywithpaytm?orderId=${order["id"]}");
+
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) => WikipediaExplorer(
+          //             orderId: order["id"], totalprice: order["totalPrice"])));
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OrderPlaced(
+                    isCOD: isTickCOD, totalPrice: order["totalPrice"])),
+            (val) => false,
+          );
+        }
+      },
     );
   }
 }

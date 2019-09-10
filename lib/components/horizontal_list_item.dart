@@ -2,11 +2,17 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalListItem extends StatelessWidget {
-  final String name, currentPrice, mrpPrice;
+  final String name, currentPrice, mrpPrice, imageURL;
   final bool showBorder;
+  final String id;
 
   HorizontalListItem(
-      {this.name, this.currentPrice, this.mrpPrice, this.showBorder = false});
+      {this.id,
+      this.imageURL,
+      this.name,
+      this.currentPrice,
+      this.mrpPrice,
+      this.showBorder = false});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,9 @@ class HorizontalListItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.asset("assets/images/Rectangle.png", width: 80, height: 80),
+          Hero(
+              tag: id,
+              child: Image.network("$imageURL", width: 80, height: 80)),
           Container(
             padding: EdgeInsets.only(bottom: 20, left: 10),
             width: MediaQuery.of(context).size.width / 1.8,
@@ -48,7 +56,7 @@ class HorizontalListItem extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomRight,
       child: Text(
-        "$price",
+        "Rs $price",
         textAlign: TextAlign.right,
         style: TextStyle(
             fontSize: currentPrice ? 16 : 12,

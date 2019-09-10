@@ -2,26 +2,34 @@ import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/vendor_detail_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/models/InventoryItemModel.dart';
+import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 class ItemDetail extends StatefulWidget {
   final String description, name, vendorName, vendorAddress, callNumber;
+  final InventoryItemModel inventory;
 
   ItemDetail(
       {this.description,
       this.name,
       this.vendorName,
       this.vendorAddress,
-      this.callNumber});
+      this.callNumber,
+      this.inventory});
   @override
   _ItemDetailState createState() => _ItemDetailState();
 }
 
 class _ItemDetailState extends State<ItemDetail> {
+  GlobalKey<ScaffoldState> scaffold_state = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffold_state,
       body: layout(),
     );
   }
@@ -34,10 +42,13 @@ class _ItemDetailState extends State<ItemDetail> {
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             children: <Widget>[
-              Image.asset("assets/images/mobile.png"),
+              Hero(
+                  tag: widget.inventory.id,
+                  child: Image.network("${widget.inventory.imageURL}",
+                      height: 500)),
               Container(margin: EdgeInsets.only(top: 10)),
               Text(
-                "Apple iPhone X - 64 GB / Rose Gold",
+                widget.inventory.name,
                 style: TextStyle(color: PRIMARY_COLOR, fontSize: 30),
                 textAlign: TextAlign.center,
               ),
@@ -65,7 +76,7 @@ class _ItemDetailState extends State<ItemDetail> {
           ),
           SizedBox(height: 10),
           Text(
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut libero libero. Sed feugiat, nibh vitae fermentum dictum, metus nisl convallis eros, non finibus mauris ipsum quis massa.",
+            widget.inventory.description,
             style: TextStyle(fontSize: 16),
           )
         ],
@@ -85,9 +96,11 @@ class _ItemDetailState extends State<ItemDetail> {
           ),
           SizedBox(height: 10),
           VendorDetail(
-            name: "Vineesh",
-            address:
-                "NO 36 K C K NAGAR ARNI PALAYAM ARANI 632301 TV MALAI TAMILNADU INDIA ASIA EARTH SOLAR SYSTEM",
+            name: widget.inventory.vendor.storeName,
+            address: widget.inventory.vendor.address['addressLine'] +
+                "\n" +
+                widget.inventory.vendor.address['city'],
+            adminPhoneNumber: widget.inventory.vendor.adminPhonenumber,
           ),
         ],
       ),
@@ -95,6 +108,8 @@ class _ItemDetailState extends State<ItemDetail> {
   }
 
   Widget bottom() {
+    final cartState = Provider.of<CartState>(context);
+
     return Container(
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -105,13 +120,13 @@ class _ItemDetailState extends State<ItemDetail> {
           Column(
             children: <Widget>[
               Text(
-                "Rs. 56 000",
+                "Rs " + widget.inventory.originalPrice.toString(),
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: 18, decoration: TextDecoration.lineThrough),
               ),
               Text(
-                "Rs. 36 000",
+                "Rs " + widget.inventory.sellingPrice.toString(),
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: 26,
@@ -123,7 +138,17 @@ class _ItemDetailState extends State<ItemDetail> {
           PrimaryButtonWidget(
             buttonText: "Add to cart",
             icon: FeatherIcons.shoppingCart,
-            onPressed: () {},
+            onPressed: () {
+              final snackBar =
+                  SnackBar(content: Text('This item added to the cart !'));
+              scaffold_state.currentState.showSnackBar(snackBar);
+              cartState.setCartItems({
+                "name": widget.inventory.name,
+                "imageUrl": widget.inventory.imageURL,
+                "itemId": widget.inventory.id,
+                "price": widget.inventory.sellingPrice
+              });
+            },
           )
         ],
       ),

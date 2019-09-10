@@ -2,9 +2,17 @@ import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/models/UserModel.dart';
 import 'package:elec_mart_customer/screens/create_account.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'graphql/customerLogin.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -12,6 +20,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  Map input = {"phoneNumber": "", "password": ""};
+
+  String errors = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +41,7 @@ class _LoginState extends State<Login> {
         login(),
         SizedBox(height: MediaQuery.of(context).size.height / 5),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 110),
+          padding: EdgeInsets.symmetric(horizontal: 100),
           child: SecondaryButton(
             buttonText: "Create Account",
             onPressed: () {
@@ -52,28 +64,27 @@ class _LoginState extends State<Login> {
           SizedBox(height: 30),
           CustomTextField(
             labelText: "Phone Number",
-            onChanged: (val) {},
+            onChanged: (val) {
+              setState(() {
+                input["phoneNumber"] = val;
+              });
+            },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "Password",
-            onChanged: (val) {},
+            onChanged: (val) {
+              setState(() {
+                input["password"] = val;
+              });
+            },
+            isSecure: true,
           ),
           SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              PrimaryButtonWidget(
-                buttonText: "Login",
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => NavigateScreens()));
-                },
-              )
-            ],
-          )
+          if (input['phoneNumber'] != "" && input['password'] != "")
+            mutationComponent()
+          else
+            Container(height: 50),
         ],
       ),
     );
@@ -86,6 +97,65 @@ class _LoginState extends State<Login> {
           color: color,
           fontSize: size,
           fontWeight: isBold ? FontWeight.bold : null),
+    );
+  }
+
+  Widget mutationComponent() {
+    return Mutation(
+      options: MutationOptions(
+        document: customerLogin,
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return result.loading
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: CupertinoActivityIndicator())
+            : Align(
+                alignment: Alignment.bottomRight,
+                child: PrimaryButtonWidget(
+                  buttonText: "Login",
+                  onPressed: () {
+                    runMutation({
+                      "phoneNumber": input['phoneNumber'],
+                      "password": input['password'],
+                    });
+                  },
+                ));
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {
+        final prefs = await SharedPreferences.getInstance();
+        final appState = Provider.of<AppState>(context);
+        if (resultData['customerLogin']['error'] != null) {
+          setState(() {
+            errors = resultData['customerLogin']['error']['message'];
+          });
+        }
+        if (resultData != null &&
+            resultData['customerLogin']['error'] == null) {
+          final user = UserModel.fromJson(resultData['customerLogin']['user']);
+          if (user != null) {
+            final String token = resultData['customerLogin']['jwtToken'];
+
+            await prefs.setString('token', token);
+            await prefs.setString('name', user.name);
+            await prefs.setString('phone number', user.phoneNumber);
+            appState.setToken(token);
+            appState.setName(user.name);
+            appState.setPhoneNumber(user.phoneNumber);
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => NavigateScreens()),
+            );
+          }
+        }
+      },
     );
   }
 }

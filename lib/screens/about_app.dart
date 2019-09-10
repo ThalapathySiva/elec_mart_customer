@@ -36,21 +36,20 @@ class AboutApp extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(right: 120),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      'v 1.0',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: PRIMARY_COLOR,
+                  padding: EdgeInsets.only(right: 120),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        'v 1.0',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: PRIMARY_COLOR,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  )),
               Container(padding: EdgeInsets.only(top: 24)),
               Center(
                 child: Text(

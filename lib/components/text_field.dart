@@ -5,8 +5,16 @@ class CustomTextField extends StatelessWidget {
   final String labelText;
   final double height, width;
   final ValueChanged<String> onChanged;
+  final bool isSecure;
+  final bool isNumeric;
 
-  CustomTextField({this.labelText, this.onChanged, this.height, this.width});
+  CustomTextField(
+      {this.labelText,
+      this.onChanged,
+      this.height,
+      this.width,
+      this.isNumeric = false,
+      this.isSecure = false});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -18,7 +26,9 @@ class CustomTextField extends StatelessWidget {
         color: LIGHT_BLUE_COLOR.withOpacity(0.03),
       ),
       child: TextField(
+        obscureText: isSecure,
         onChanged: onChanged,
+        keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
         decoration: InputDecoration(
             border: InputBorder.none,
             hintText: "$labelText",

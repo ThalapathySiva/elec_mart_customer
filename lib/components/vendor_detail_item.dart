@@ -1,11 +1,12 @@
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VendorDetail extends StatelessWidget {
-  final String name, address;
+  final String name, address, adminPhoneNumber;
 
-  VendorDetail({this.name, this.address});
+  VendorDetail({this.name, this.adminPhoneNumber, this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +33,9 @@ class VendorDetail extends StatelessWidget {
                       children: <Widget>[
                         SecondaryButton(
                           buttonText: "call",
-                          onPressed: () {},
-                          buttonHeight: 30,
-                          buttonWidth: 75,
+                          onPressed: () {
+                            launch("tel://$adminPhoneNumber");
+                          },
                         )
                       ],
                     ),

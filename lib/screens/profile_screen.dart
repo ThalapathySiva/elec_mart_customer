@@ -1,11 +1,19 @@
+import 'dart:convert';
 
 import 'package:elec_mart_customer/components/setting_option.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'about_app.dart';
 import 'change_number.dart';
 import 'edit_address.dart';
+import 'graphql/getCustomerInfo.dart';
+import 'login.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -15,6 +23,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+
     return Scaffold(
       backgroundColor: WHITE_COLOR,
       body: ListView(
@@ -22,11 +32,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(padding: EdgeInsets.only(top: 20)),
           textWidget('Profile', TextAlign.center, BLACK_COLOR, 16),
           Container(padding: EdgeInsets.only(top: 40)),
-          textWidget('Arthur Morgan', TextAlign.center, PRIMARY_COLOR, 24),
-          textWidget('+91 9988778899', TextAlign.center, BLACK_COLOR, 16),
+          textWidget('${appState.name}', TextAlign.center, PRIMARY_COLOR, 24),
+          textWidget(
+              '${appState.phoneNumber}', TextAlign.center, BLACK_COLOR, 16),
           Container(padding: EdgeInsets.only(top: 20)),
-          textWidget('Edit Name', TextAlign.center, PRIMARY_COLOR, 16),
-          addressContainer(),
+          getAddressQuery(),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -53,9 +63,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           Container(padding: EdgeInsets.only(top: 10)),
-          SettingsOption(
-            title: 'Log Out',
-            color: BLACK_COLOR,
+          InkWell(
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Login()));
+            },
+            child: SettingsOption(
+              title: 'Log Out',
+              color: BLACK_COLOR,
+            ),
           ),
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
@@ -91,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget addressContainer() {
+  Widget addressContainer(Map address) {
     return Container(
       padding: EdgeInsets.all(24),
       margin: EdgeInsets.all(20),
@@ -104,13 +122,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
           textWidget('This will be used for delivery', TextAlign.start,
               PRIMARY_COLOR.withOpacity(0.35), 12),
           Container(margin: EdgeInsets.only(top: 20)),
-          textWidget('Mr. Vineesh', TextAlign.start, BLACK_COLOR, 16),
-          textWidget('10/45, ABC Street, Lorem Ipsum,', TextAlign.start,
-              BLACK_COLOR, 16),
-          textWidget('Coimbatore - 456067', TextAlign.start, BLACK_COLOR, 16),
-          textWidget('+91 8898896969', TextAlign.start, PRIMARY_COLOR, 16),
+          textWidget('${address["name"]}', TextAlign.start, BLACK_COLOR, 16),
+          textWidget(
+              '${address["addressLine"]},', TextAlign.start, BLACK_COLOR, 16),
+          textWidget('${address["city"]}', TextAlign.start, BLACK_COLOR, 16),
+          textWidget(
+              '${address["phoneNumber"]}', TextAlign.start, PRIMARY_COLOR, 16),
         ],
       ),
+    );
+  }
+
+  Widget getAddressQuery() {
+    final appState = Provider.of<AppState>(context);
+    return Query(
+      options: QueryOptions(
+        document: getCustomerInfo,
+        fetchPolicy: FetchPolicy.noCache,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+        pollInterval: 2,
+      ),
+      builder: (QueryResult result, {VoidCallback refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        String addressString =
+            result.data["getCustomerInfo"]["user"]["address"];
+        Map address = jsonDecode(addressString);
+        return addressContainer(address);
+      },
     );
   }
 }

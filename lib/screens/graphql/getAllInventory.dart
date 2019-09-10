@@ -1,0 +1,20 @@
+const String getAllInventory = """query GetAllInventory{
+  getAllInventory{
+    inventory{
+      id,
+      name,
+      originalPrice,
+      sellingPrice,
+      description,
+      imageUrl,
+      vendor{
+        shopPhotoUrl,
+        storeName,
+        address,
+        phoneNumber
+      }
+      category,
+      inStock,
+    }
+  }
+}""";

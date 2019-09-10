@@ -1,10 +1,15 @@
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 
 class OrderPlaced extends StatefulWidget {
+  final totalPrice;
+  final bool isCOD;
+
+  OrderPlaced({this.isCOD, this.totalPrice});
   @override
   _OrderPlacedState createState() => _OrderPlacedState();
 }
@@ -27,7 +32,7 @@ class _OrderPlacedState extends State<OrderPlaced> {
           SizedBox(height: 10),
           orderPlaceText(),
           SizedBox(height: 20),
-          cod(),
+          widget.isCOD ? cod() : Container(),
           SizedBox(height: 20),
           track(),
           SizedBox(height: 50),
@@ -36,7 +41,10 @@ class _OrderPlacedState extends State<OrderPlaced> {
             width: MediaQuery.of(context).size.width,
             child: PrimaryButtonWidget(
               buttonText: "Got it",
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => Orders()));
+              },
             ),
           )
         ],
@@ -67,9 +75,13 @@ class _OrderPlacedState extends State<OrderPlaced> {
 
   Widget track() {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 80),
+        padding: EdgeInsets.symmetric(horizontal: 50),
         child: SecondaryButton(
-            buttonText: "Track Order Status", onPressed: () {}));
+            buttonText: "Track Order Status",
+            onPressed: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Orders()));
+            }));
   }
 
   Widget cod() {
@@ -108,7 +120,7 @@ class _OrderPlacedState extends State<OrderPlaced> {
                 SizedBox(height: 10),
                 Center(
                   child: Text(
-                    "Rs. 3,45,560",
+                    "Rs. ${widget.totalPrice}",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
