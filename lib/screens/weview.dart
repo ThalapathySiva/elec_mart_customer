@@ -28,13 +28,11 @@ class _WikipediaExplorerState extends State<WikipediaExplorer> {
                   'http://cezhop.herokuapp.com/paywithpaytm?orderId=${widget.orderId}',
               javascriptMode: JavascriptMode.unrestricted,
               onPageFinished: (string) {
-                print('Currently in the URL ' + string);
                 webViewController
                     .evaluateJavascript(
                         '(function(){return window.document.body.innerText})();')
                     .then((onValue) {
                   if (onValue == null) {
-                    print('ERROR PUNDAAAAAAAS');
                   }
                   verifyIfTransactionComplete(
                       onValue, context, widget.totalprice);
@@ -52,7 +50,6 @@ class _WikipediaExplorerState extends State<WikipediaExplorer> {
 
 bool verifyIfTransactionComplete(
     String onValue, BuildContext context, totalprice) {
-  print(onValue);
   try {
     if (onValue.contains('TXN_SUCCESS')) {
       Navigator.push(

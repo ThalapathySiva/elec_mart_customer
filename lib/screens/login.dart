@@ -1,3 +1,4 @@
+import 'package:elec_mart_customer/components/dialog_style.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
@@ -34,12 +35,11 @@ class _LoginState extends State<Login> {
   Widget layout() {
     return ListView(
       children: <Widget>[
-        // Image.asset("assets/images/image.png",
-        //     fit: BoxFit.fitWidth,
-        //     height: 300,
-        //     width: MediaQuery.of(context).size.width),
+        Image.asset("assets/images/image.png",
+            fit: BoxFit.fitWidth,
+            height: 300,
+            width: MediaQuery.of(context).size.width),
         login(),
-        SizedBox(height: MediaQuery.of(context).size.height / 5),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 100),
           child: SecondaryButton(
@@ -63,6 +63,7 @@ class _LoginState extends State<Login> {
           text("Login", 36, PRIMARY_COLOR, true),
           SizedBox(height: 30),
           CustomTextField(
+            isNumeric: true,
             labelText: "Phone Number",
             onChanged: (val) {
               setState(() {
@@ -135,7 +136,11 @@ class _LoginState extends State<Login> {
           setState(() {
             errors = resultData['customerLogin']['error']['message'];
           });
+          return showDialog(
+              context: context,
+              builder: (context) => DialogStyle(content: errors));
         }
+
         if (resultData != null &&
             resultData['customerLogin']['error'] == null) {
           final user = UserModel.fromJson(resultData['customerLogin']['user']);

@@ -59,8 +59,10 @@ class _OrderDetailState extends State<OrderDetail> {
           itemsInOrder(),
           address(),
           if (widget.order.status.toUpperCase() ==
-                  OrderStatuses.PLACED_BY_CUSTOMER &&
-              widget.order.transactionSuccess != false)
+                      OrderStatuses.PLACED_BY_CUSTOMER &&
+                  widget.order.transactionSuccess != false ||
+              widget.order.paymentMode == "Cash On Delivery" &&
+                  widget.order.status != OrderStatuses.CANCELLED_BY_CUSTOMER)
             mutationComponent()
         ],
       ),

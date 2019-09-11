@@ -35,8 +35,9 @@ class OrderModel {
         id: json['id'],
         orderNo: json['orderNo'],
         address: AddressModel.fromJson(jsonDecode(json['address'])),
-        cartItems:
-            cartItems.map((item) => CartItemModel.fromJson(item)).toList(),
+        cartItems: cartItems
+            .map((item) => CartItemModel.fromJson(item['inventory']))
+            .toList(),
         status: json['status'],
         datePlaced: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['datePlaced']) * 1000,

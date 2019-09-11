@@ -1,4 +1,5 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/screens/edit_address.dart';
 import 'package:elec_mart_customer/screens/login.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
@@ -26,12 +27,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("background");
   }
 
   @override
   void dispose() {
-    print("dispose");
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -39,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final HttpLink httpLink = HttpLink(
     uri: 'http://cezhop.herokuapp.com/graphql',
   );
-  bool isAuthenticated = false;
+  bool isAuthenticated = false, isAddressGave = false;
   @override
   void initState() {
     _getPref();
@@ -70,18 +69,30 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
                 fontFamily: 'Quicksand', scaffoldBackgroundColor: WHITE_COLOR),
-            home: isAuthenticated ? NavigateScreens() : Login(),
+            home: chooseHome(),
           ),
         ),
       )),
     );
   }
 
+  Widget chooseHome() {
+    if (isAuthenticated) {
+      if (isAddressGave) {
+        return NavigateScreens();
+      }
+      return EditAddress(showBackButton: false);
+    }
+    return Login();
+  }
+
   _getPref() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
+    final address = prefs.getBool('address') ?? false;
     setState(() {
       isAuthenticated = token != null;
+      isAddressGave = address;
     });
   }
 }

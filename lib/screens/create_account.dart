@@ -1,4 +1,5 @@
 import 'package:elec_mart_customer/components/app_title.dart';
+import 'package:elec_mart_customer/components/dialog_style.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
@@ -74,7 +75,9 @@ class _CreateAccountState extends State<CreateAccount> {
         children: <Widget>[
           TeritoryButton(
             text: "Back",
-            onpressed: () {},
+            onpressed: () {
+              Navigator.pop(context);
+            },
           ),
           isLoading
               ? CupertinoActivityIndicator()
@@ -193,6 +196,9 @@ class _CreateAccountState extends State<CreateAccount> {
           setState(() {
             errors = resultData['customerRegister']['error']['message'];
           });
+          return showDialog(
+              context: context,
+              builder: (context) => DialogStyle(content: errors));
         }
 
         if (resultData != null &&

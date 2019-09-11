@@ -9,8 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditAddress extends StatefulWidget {
+  final bool showBackButton;
+
+  EditAddress({this.showBackButton = true});
   @override
   _EditAddressState createState() => _EditAddressState();
 }
@@ -26,6 +30,7 @@ class _EditAddressState extends State<EditAddress> {
 
   @override
   Widget build(BuildContext context) {
+    print(input);
     return Scaffold(
       body: layout(),
     );
@@ -34,7 +39,7 @@ class _EditAddressState extends State<EditAddress> {
   Widget layout() {
     return ListView(
       children: <Widget>[
-        AppTitleWidget(),
+        widget.showBackButton ? AppTitleWidget() : Container(),
         texts(),
         textFields(),
       ],
@@ -160,6 +165,9 @@ class _EditAddressState extends State<EditAddress> {
         return cache;
       },
       onCompleted: (dynamic resultData) async {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setBool('address', true);
+
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => NavigateScreens()));
       },

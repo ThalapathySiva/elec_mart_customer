@@ -25,9 +25,7 @@ class _OTPScreenState extends State<OTPScreen> {
   Future<void> verifyPhone() async {
     final PhoneCodeSent smsOTPSent = (String verId, [int forceCodeResend]) {
       this.verificationId = verId;
-      print('OTP SENT!!');
       smsOTPDialog(context).then((value) {
-        print('sign in');
       });
     };
     try {
@@ -36,17 +34,14 @@ class _OTPScreenState extends State<OTPScreen> {
           codeAutoRetrievalTimeout: (String verId) {
             //Starts the phone number verification process for the given phone number.
             //Either sends an SMS with a 6 digit code to the phone number specified, or sign's the user in and [verificationCompleted] is called.
-            print('Inside Auth : ' + verId);
             this.verificationId = verId;
           },
           codeSent:
               smsOTPSent, // WHEN CODE SENT THEN WE OPEN DIALOG TO ENTER OTP.
           timeout: const Duration(seconds: 20),
           verificationCompleted: (AuthCredential phoneAuthCredential) {
-            print(phoneAuthCredential);
           },
           verificationFailed: (AuthException exceptio) {
-            print('${exceptio.message}');
           });
     } catch (e) {
       handleError(e);
@@ -114,7 +109,6 @@ class _OTPScreenState extends State<OTPScreen> {
   }
 
   handleError(PlatformException error) {
-    print(error);
     switch (error.code) {
       case 'ERROR_INVALID_VERIFICATION_CODE':
         FocusScope.of(context).requestFocus(new FocusNode());
@@ -123,7 +117,6 @@ class _OTPScreenState extends State<OTPScreen> {
         });
         Navigator.of(context).pop();
         smsOTPDialog(context).then((value) {
-          print('sign in');
         });
         break;
       default:
@@ -175,11 +168,11 @@ class _OTPScreenState extends State<OTPScreen> {
                 PrimaryButtonWidget(
                     buttonText: "Verify",
                     onPressed: () {
-                      verifyPhone();
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => EditAddress()));
+                     // verifyPhone();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditAddress()));
                     })
               ],
             )

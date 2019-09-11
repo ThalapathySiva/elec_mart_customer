@@ -1,18 +1,18 @@
-
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
 
 class DialogStyle extends StatelessWidget {
+  final String content;
+
+  DialogStyle({this.content});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: Center(
         child: Text(
-          'Approval pending',
+          'Error Occured',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -24,7 +24,7 @@ class DialogStyle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            'Your account is waiting for admin approval, and can only be accessed once it is complete.',
+            content,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -36,7 +36,9 @@ class DialogStyle extends StatelessWidget {
             padding: const EdgeInsets.only(top: 32.0),
             child: PrimaryButtonWidget(
               buttonText: 'Got it',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           )
         ],
