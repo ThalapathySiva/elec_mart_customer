@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:elec_mart_customer/models/VendorModel.dart';
 
 class InventoryItemModel {
@@ -8,15 +10,17 @@ class InventoryItemModel {
   final String description;
   final double inStock;
   final String category;
-  final String imageURL;
+  final DateTime date;
   final VendorModel vendor;
+  final List images;
 
   InventoryItemModel(
-      {this.vendor,
+      {this.images,
+      this.vendor,
       this.originalPrice,
+      this.date,
       this.sellingPrice,
       this.description,
-      this.imageURL,
       this.name,
       this.id,
       this.category,
@@ -27,10 +31,13 @@ class InventoryItemModel {
         name: json['name'],
         id: json['id'],
         description: json['description'],
-        imageURL: json['imageUrl'],
         originalPrice: json['originalPrice'].toDouble(),
         sellingPrice: json['sellingPrice'].toDouble(),
         category: json['category'],
+        date: DateTime.fromMicrosecondsSinceEpoch(
+          int.parse(json['date']) * 1000,
+        ),
+        images: jsonDecode(json['imageUrl']),
         inStock: json['inStock'].toDouble(),
         vendor: VendorModel?.fromJson(json['vendor']));
   }

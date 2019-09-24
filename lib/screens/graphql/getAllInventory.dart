@@ -15,6 +15,7 @@ const String getAllInventory = """query GetAllInventory{
       }
       category,
       inStock,
+      date,
     }
   }
 }""";

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/vendor_detail_item.dart';
@@ -5,6 +7,7 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -43,9 +46,26 @@ class _ItemDetailState extends State<ItemDetail> {
             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             children: <Widget>[
               Hero(
-                  tag: widget.inventory.id,
-                  child: Image.network("${widget.inventory.imageURL}",
-                      height: 500)),
+                tag: widget.inventory.id,
+                child: SizedBox(
+                    height: 500.0,
+                    width: 350.0,
+                    child: Carousel(
+                      images: widget.inventory.images
+                          .map((f) => Image.network(
+                                f,
+                                fit: BoxFit.fitWidth,
+                              ))
+                          .toList(),
+                      dotSize: 4.0,
+                      dotSpacing: 15.0,
+                      dotColor: Colors.lightGreenAccent,
+                      indicatorBgPadding: 5.0,
+                      borderRadius: true,
+                      moveIndicatorFromBottom: 180.0,
+                      noRadiusForIndicator: true,
+                    )),
+              ),
               Container(margin: EdgeInsets.only(top: 10)),
               Text(
                 widget.inventory.name,
@@ -100,7 +120,6 @@ class _ItemDetailState extends State<ItemDetail> {
             address: widget.inventory.vendor.address['addressLine'] +
                 "\n" +
                 widget.inventory.vendor.address['city'],
-            adminPhoneNumber: widget.inventory.vendor.adminPhonenumber,
           ),
         ],
       ),
@@ -144,7 +163,7 @@ class _ItemDetailState extends State<ItemDetail> {
               scaffold_state.currentState.showSnackBar(snackBar);
               cartState.setCartItems({
                 "name": widget.inventory.name,
-                "imageUrl": widget.inventory.imageURL,
+                "imageUrl": widget.inventory.images,
                 "itemId": widget.inventory.id,
                 "price": widget.inventory.sellingPrice
               });

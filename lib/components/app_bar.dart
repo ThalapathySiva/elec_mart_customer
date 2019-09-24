@@ -4,9 +4,20 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatefulWidget {
   final Function onFilterPressed;
+  final Function onCategoryPressed;
+  final String selectedName;
   final IconData iconRight;
+  final bool isFilter;
+  final bool isExpanded;
+  
 
-  const CustomAppBar({this.onFilterPressed, this.iconRight});
+  const CustomAppBar(
+      {this.isExpanded,
+      this.isFilter,
+      this.selectedName,
+      this.onCategoryPressed,
+      this.onFilterPressed,
+      this.iconRight});
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
 }
@@ -30,17 +41,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 width: 30,
               ),
             ),
-            Row(
-              children: <Widget>[
-                Text(
-                  "Mobile Phones",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Icon(
-                  FeatherIcons.chevronDown,
-                  color: PRIMARY_COLOR,
-                )
-              ],
+            GestureDetector(
+              onTap: widget.onCategoryPressed,
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "${widget.selectedName}",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Icon(
+                    !widget.isFilter && widget.isExpanded
+                        ? FeatherIcons.chevronUp
+                        : FeatherIcons.chevronDown,
+                    color: PRIMARY_COLOR,
+                  )
+                ],
+              ),
             ),
             IconButton(
               padding: EdgeInsets.all(0),

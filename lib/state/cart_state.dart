@@ -27,5 +27,10 @@ class CartState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearCart() {
+    _cartItems = [];
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> get cartItems => _cartItems;
 }

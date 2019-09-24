@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 
 class HorizontalNewItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
+  final String id;
+  final List imageURL;
 
   HorizontalNewItem({
+    this.id,
+    this.imageURL,
     this.name,
     this.currentPrice,
     this.mrpPrice,
@@ -17,6 +21,8 @@ class HorizontalNewItem extends StatelessWidget {
         Container(
           padding: EdgeInsets.only(top: 10),
           child: HorizontalListItem(
+            id: id,
+            imageURL: imageURL,
             name: name,
             currentPrice: currentPrice,
             mrpPrice: mrpPrice,
@@ -40,9 +46,7 @@ class HorizontalNewItem extends StatelessWidget {
         child: Text(
           "NEW",
           style: TextStyle(
-              color: WHITE_COLOR,
-              fontSize: 12,
-              fontWeight: FontWeight.bold),
+              color: WHITE_COLOR, fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ),
     );

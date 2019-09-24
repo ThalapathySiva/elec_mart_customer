@@ -48,16 +48,30 @@ class _OrdersState extends State<Orders> {
   Widget orderList(Map result) {
     List data = result["getCustomerOrders"]["orders"];
     var orders = [], previousOrders, activeOrders;
+    if (data.length == 0) {
+      return Container(
+        child: Center(
+          child: Text(
+            "No order found...",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: PRIMARY_COLOR),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
     if (data != null) {
       orders =
           data.map((f) => OrderModel.fromJson(f)).toList().reversed.toList();
       previousOrders = orders
           .where((f) =>
               (f.status == OrderStatuses.CANCELLED_BY_CUSTOMER ||
-                      f.status == OrderStatuses.CANCELLED_BY_STORE ||
-                      f.status == OrderStatuses.DELIVERED_AND_PAID) &&
-                  f.transactionSuccess == false ||
-              f.paymentMode != "Cash On Delivery")
+                  f.status == OrderStatuses.CANCELLED_BY_STORE ||
+                  f.status == OrderStatuses.DELIVERED_AND_PAID) &&
+              (f.transactionSuccess == false ||
+                  f.paymentMode != "Cash On Delivery"))
           .toList();
       activeOrders = orders
           .where((f) =>

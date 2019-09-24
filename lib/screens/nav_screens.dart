@@ -50,6 +50,5 @@ class _NavigateScreensState extends State<NavigateScreens> {
       default:
         return Container();
     }
-    ;
   }
 }

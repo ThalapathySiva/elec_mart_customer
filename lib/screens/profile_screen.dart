@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'about_app.dart';
 import 'change_number.dart';
@@ -41,7 +42,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditAddress()),
+                MaterialPageRoute(
+                    builder: (context) => EditAddress(showBackButton: true)),
               );
             },
             child: SettingsOption(
@@ -59,6 +61,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             child: SettingsOption(
               title: 'Change Phone Number',
+              color: BLACK_COLOR,
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              launch("tel://8144479784");
+            },
+            child: SettingsOption(
+              title: 'HelpLine',
               color: BLACK_COLOR,
             ),
           ),

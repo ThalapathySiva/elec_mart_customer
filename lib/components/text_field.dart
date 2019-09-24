@@ -6,10 +6,12 @@ class CustomTextField extends StatelessWidget {
   final double height, width;
   final ValueChanged<String> onChanged;
   final bool isSecure;
+  final String errorText;
   final bool isNumeric;
 
   CustomTextField(
-      {this.labelText,
+      {this.errorText,
+      this.labelText,
       this.onChanged,
       this.height,
       this.width,
@@ -31,6 +33,7 @@ class CustomTextField extends StatelessWidget {
         keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
         decoration: InputDecoration(
             border: InputBorder.none,
+            errorText: errorText,
             hintText: "$labelText",
             hintStyle: TextStyle(
                 color: LIGHT_BLUE_COLOR,

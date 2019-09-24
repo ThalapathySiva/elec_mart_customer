@@ -43,7 +43,6 @@ class DropDownWidget extends StatelessWidget {
             .toList(),
         onChanged:  onChanged,
         value: itemValue,
-        //hint: Text('Enter a value'),
       ),
     );
   }

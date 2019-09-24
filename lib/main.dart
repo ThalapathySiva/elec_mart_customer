@@ -26,8 +26,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-  }
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
 
   @override
   void dispose() {
@@ -81,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (isAddressGave) {
         return NavigateScreens();
       }
-      return EditAddress(showBackButton: false);
+      return EditAddress();
     }
     return Login();
   }
@@ -90,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final address = prefs.getBool('address') ?? false;
+    print("address" + address.toString());
     setState(() {
       isAuthenticated = token != null;
       isAddressGave = address;

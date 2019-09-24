@@ -2,7 +2,6 @@ import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/cart_item.dart';
 import 'package:elec_mart_customer/components/order_status_component.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
-import 'package:elec_mart_customer/components/vendor_detail_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/constants/strings.dart';
 import 'package:elec_mart_customer/models/OrderModel.dart';
@@ -138,28 +137,11 @@ class _OrderDetailState extends State<OrderDetail> {
       itemCount: widget.order.cartItems.length,
       itemBuilder: (context, index) {
         return CartItem(
-          imageUrl: "${widget.order.cartItems[index].imageURL}",
+          imageUrl: "${widget.order.cartItems[index].imageURL[0]}",
           name: "${widget.order.cartItems[index].name}",
           currentPrice: "Rs. ${widget.order.cartItems[index].price}",
         );
       },
-    );
-  }
-
-  Widget vendor() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          text("SOLD BY", 12, PRIMARY_COLOR, true),
-          VendorDetail(
-              adminPhoneNumber: "${widget.order.vendor.adminPhonenumber}",
-              name: "${widget.order.vendor.storeName}",
-              address:
-                  "${widget.order.vendor.address['addressLine']} \n  ${widget.order.vendor.address['city']}")
-        ],
-      ),
     );
   }
 
@@ -182,40 +164,46 @@ class _OrderDetailState extends State<OrderDetail> {
 
   Widget finalColumn(RunMutation runMutation) {
     return Container(
-        padding: EdgeInsets.all(24),
-        child: Center(
-            child: SecondaryButton(
-                buttonText: "Cancel Order",
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text(
-                                "Are you sure you want to cancel this order ?"),
-                            actions: <Widget>[
-                              FlatButton(
-                                  child: Text("No"),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  }),
-                              FlatButton(
-                                child: Text("Yes"),
-                                onPressed: () {
-                                  runMutation({
-                                    "status":
-                                        OrderStatuses.CANCELLED_BY_CUSTOMER,
-                                    "orderId": "${widget.order.id}"
-                                  });
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              NavigateScreens()));
-                                },
-                              )
-                            ],
-                          ));
-                })));
+      padding: EdgeInsets.all(24),
+      child: Center(
+        child: SecondaryButton(
+          buttonText: "Cancel Order",
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Are you sure you want to cancel this order ?"),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("No"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  FlatButton(
+                    child: Text("Yes"),
+                    onPressed: () {
+                      runMutation(
+                        {
+                          "status": OrderStatuses.CANCELLED_BY_CUSTOMER,
+                          "orderId": "${widget.order.id}"
+                        },
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NavigateScreens(),
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Widget text(String title, double size, Color color, bool isBold) {

@@ -5,6 +5,7 @@ import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/UserModel.dart';
+import 'package:elec_mart_customer/screens/edit_address.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -84,12 +85,26 @@ class _CreateAccountState extends State<CreateAccount> {
               : PrimaryButtonWidget(
                   buttonText: "Next",
                   onPressed: () {
-                    mutation({
-                      "name": input['name'],
-                      "phoneNumber": input['phoneNumber'],
-                      "email": input['email'],
-                      "password": input['password'],
-                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OTPScreen(
+                                phoneNumber: input["phoneNumber"],
+                                onOTPIncorrect: () {
+                                  print("SOMETHING WRONG HAPPENED!!!");
+                                },
+                                onOTPSuccess: () {
+                                  print('ON OTP SUCCESS HAS BEEN CALLED!!!');
+                                  Navigator.pop(context);
+                                  mutation({
+                                    "name": input['name'],
+                                    "phoneNumber": input['phoneNumber'],
+                                    "email": input['email'],
+                                    "password": input['password'],
+                                  });
+                                },
+                              )),
+                    );
                   },
                 )
         ],
@@ -214,11 +229,8 @@ class _CreateAccountState extends State<CreateAccount> {
             appState.setToken(token);
             appState.setName(user.name);
             appState.setPhoneNumber(user.phoneNumber);
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => OTPScreen()),
-            );
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => EditAddress()));
           }
         }
       },

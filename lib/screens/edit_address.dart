@@ -12,9 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditAddress extends StatefulWidget {
-  final bool showBackButton;
+  final showBackButton;
 
-  EditAddress({this.showBackButton = true});
+  EditAddress({this.showBackButton = false});
   @override
   _EditAddressState createState() => _EditAddressState();
 }
@@ -30,7 +30,6 @@ class _EditAddressState extends State<EditAddress> {
 
   @override
   Widget build(BuildContext context) {
-    print(input);
     return Scaffold(
       body: layout(),
     );
@@ -70,28 +69,36 @@ class _EditAddressState extends State<EditAddress> {
           CustomTextField(
             labelText: "Name",
             onChanged: (val) {
-              input['Name'] = val;
+              setState(() {
+                input['Name'] = val;
+              });
             },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "Street/Locality",
             onChanged: (val) {
-              input['Address'] = val;
+              setState(() {
+                input['Address'] = val;
+              });
             },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "Landmark",
             onChanged: (val) {
-              input['Landmark'] = val;
+              setState(() {
+                input['Landmark'] = val;
+              });
             },
           ),
           SizedBox(height: 20),
           CustomTextField(
             labelText: "City",
             onChanged: (val) {
-              input['City'] = val;
+              setState(() {
+                input['City'] = val;
+              });
             },
           ),
           SizedBox(height: 20),
@@ -99,7 +106,9 @@ class _EditAddressState extends State<EditAddress> {
             isNumeric: true,
             labelText: "Phone Number",
             onChanged: (val) {
-              input['Mobile Number'] = val;
+              setState(() {
+                input['Mobile Number'] = val;
+              });
             },
           ),
           SizedBox(height: 50),

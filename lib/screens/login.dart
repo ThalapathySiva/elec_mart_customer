@@ -150,6 +150,7 @@ class _LoginState extends State<Login> {
             await prefs.setString('token', token);
             await prefs.setString('name', user.name);
             await prefs.setString('phone number', user.phoneNumber);
+            await prefs.setBool('address', true);
             appState.setToken(token);
             appState.setName(user.name);
             appState.setPhoneNumber(user.phoneNumber);

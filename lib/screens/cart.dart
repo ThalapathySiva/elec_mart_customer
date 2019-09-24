@@ -74,7 +74,7 @@ class _CartState extends State<Cart> {
             itemCount: cartState.cartItems.length,
             itemBuilder: (context, index) {
               return CartItem(
-                  imageUrl: "${cartState.cartItems[index]["imageUrl"]}",
+                  imageUrl: "${cartState.cartItems[index]["imageUrl"][0]}",
                   name: "${cartState.cartItems[index]["name"]}",
                   currentPrice: "${cartState.cartItems[index]["price"]}",
                   canDelete: true,
@@ -192,8 +192,11 @@ class _CartState extends State<Cart> {
                 buttonText: "Edit",
                 icon: FeatherIcons.edit2,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => EditAddress()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditAddress(showBackButton: true)));
                 },
               )
             ],
@@ -264,16 +267,14 @@ class _CartState extends State<Cart> {
         return cache;
       },
       onCompleted: (dynamic resultData) async {
+        final cartState = Provider.of<CartState>(context);
         final Map order = resultData["createNewOrder"]["orders"][0];
         if (isTickCreditCard) {
+          cartState.clearCart();
+          isTickCreditCard = false;
+          isTickCOD = false;
           launch(
               "http://cezhop.herokuapp.com/paywithpaytm?orderId=${order["id"]}");
-
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (context) => WikipediaExplorer(
-          //             orderId: order["id"], totalprice: order["totalPrice"])));
         } else {
           Navigator.pushAndRemoveUntil(
             context,

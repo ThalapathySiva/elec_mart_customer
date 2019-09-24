@@ -1,8 +1,11 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HorizontalListItem extends StatelessWidget {
-  final String name, currentPrice, mrpPrice, imageURL;
+  final String name, currentPrice, mrpPrice;
+  final List imageURL;
   final bool showBorder;
   final String id;
 
@@ -16,6 +19,10 @@ class HorizontalListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+    if (!name.toLowerCase().contains(appState.getSearchText.toLowerCase())) {
+      return Container();
+    }
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -28,7 +35,7 @@ class HorizontalListItem extends StatelessWidget {
         children: <Widget>[
           Hero(
               tag: id,
-              child: Image.network("$imageURL", width: 80, height: 80)),
+              child: Image.network("${imageURL[0]}", width: 80, height: 80)),
           Container(
             padding: EdgeInsets.only(bottom: 20, left: 10),
             width: MediaQuery.of(context).size.width / 1.8,
@@ -56,7 +63,7 @@ class HorizontalListItem extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomRight,
       child: Text(
-        "Rs $price",
+        "₹ $price",
         textAlign: TextAlign.right,
         style: TextStyle(
             fontSize: currentPrice ? 16 : 12,

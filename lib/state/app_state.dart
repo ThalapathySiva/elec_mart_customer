@@ -5,6 +5,7 @@ class AppState extends ChangeNotifier {
   String userJwtToken = "";
   String userName = "";
   String phno = "";
+  String searchText = "";
   AppState() {
     getToken();
   }
@@ -34,9 +35,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setsearchText(String text){
+    searchText = text;
+    notifyListeners();
+  }
+
   String get jwtToken => userJwtToken;
 
   String get phoneNumber => phno;
 
   String get name => userName;
+
+  String get getSearchText => searchText;
 }

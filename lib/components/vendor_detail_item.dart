@@ -1,12 +1,10 @@
-import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class VendorDetail extends StatelessWidget {
-  final String name, address, adminPhoneNumber;
+  final String name, address;
 
-  VendorDetail({this.name, this.adminPhoneNumber, this.address});
+  VendorDetail({this.name, this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +24,6 @@ class VendorDetail extends StatelessWidget {
                   Container(margin: EdgeInsets.only(top: 5)),
                   vendorText(address, context),
                   Container(margin: EdgeInsets.only(top: 15)),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        SecondaryButton(
-                          buttonText: "call",
-                          onPressed: () {
-                            launch("tel://$adminPhoneNumber");
-                          },
-                        )
-                      ],
-                    ),
-                  )
                 ]),
           ),
         ],
