@@ -139,7 +139,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     await firebaseAuth.signInWithCredential(credential).then(
                         (authResult) {
                       //OTP verification success
-                      print(authResult.toString());
+                      print("OTP VERIFICATION SUCCESS");
                       widget.onOTPSuccess();
                     }, onError: (error) {
                       handleError(error);

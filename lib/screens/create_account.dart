@@ -95,7 +95,10 @@ class _CreateAccountState extends State<CreateAccount> {
                                 },
                                 onOTPSuccess: () {
                                   print('ON OTP SUCCESS HAS BEEN CALLED!!!');
-                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditAddress()));
                                   mutation({
                                     "name": input['name'],
                                     "phoneNumber": input['phoneNumber'],

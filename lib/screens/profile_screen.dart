@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:elec_mart_customer/components/setting_option.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -76,8 +77,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
             onTap: () async {
+              final appState = Provider.of<AppState>(context);
+              final cartState = Provider.of<CartState>(context);
               final prefs = await SharedPreferences.getInstance();
               await prefs.clear();
+              appState.clearApp();
+              cartState.clearCart();
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Login()));
             },
@@ -127,20 +132,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
           border: Border.all(color: PRIMARY_COLOR.withOpacity(0.13)),
           borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: <Widget>[
-          textWidget('Your Address', TextAlign.start, PRIMARY_COLOR, 18),
-          textWidget('This will be used for delivery', TextAlign.start,
-              PRIMARY_COLOR.withOpacity(0.35), 12),
-          Container(margin: EdgeInsets.only(top: 20)),
-          textWidget('${address["name"]}', TextAlign.start, BLACK_COLOR, 16),
-          textWidget(
-              '${address["addressLine"]},', TextAlign.start, BLACK_COLOR, 16),
-          textWidget('${address["city"]}', TextAlign.start, BLACK_COLOR, 16),
-          textWidget(
-              '${address["phoneNumber"]}', TextAlign.start, PRIMARY_COLOR, 16),
-        ],
-      ),
+      child: address == {}
+          ? null
+          : Column(
+              children: <Widget>[
+                textWidget('Your Address', TextAlign.start, PRIMARY_COLOR, 18),
+                textWidget('This will be used for delivery', TextAlign.start,
+                    PRIMARY_COLOR.withOpacity(0.35), 12),
+                Container(margin: EdgeInsets.only(top: 20)),
+                textWidget(
+                    '${address["name"]}', TextAlign.start, BLACK_COLOR, 16),
+                textWidget('${address["addressLine"]},', TextAlign.start,
+                    BLACK_COLOR, 16),
+                textWidget(
+                    '${address["city"]}', TextAlign.start, BLACK_COLOR, 16),
+                textWidget('${address["phoneNumber"]}', TextAlign.start,
+                    PRIMARY_COLOR, 16),
+              ],
+            ),
     );
   }
 
@@ -161,7 +170,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (result.loading) return Center(child: CupertinoActivityIndicator());
         String addressString =
             result.data["getCustomerInfo"]["user"]["address"];
-        Map address = jsonDecode(addressString);
+        Map address = {};
+        if (addressString != null) address = jsonDecode(addressString);
         return addressContainer(address);
       },
     );

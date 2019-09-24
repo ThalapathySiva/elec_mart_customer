@@ -35,7 +35,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setsearchText(String text){
+  void clearApp() {
+    userJwtToken = "";
+    userName = "";
+    phno = "";
+    searchText = "";
+    notifyListeners();
+  }
+
+  void setsearchText(String text) {
     searchText = text;
     notifyListeners();
   }
