@@ -10,9 +10,10 @@ class VendorModel {
 
   factory VendorModel.fromJson(Map<dynamic, dynamic> json) {
     return VendorModel(
-        shopPhotoUrl: json['shopPhotoUrl'],
-        storeName: json['storeName'],
-        adminPhonenumber: json['phoneNumber'],
-        address: jsonDecode(json['address']));
+      shopPhotoUrl: json['shopPhotoUrl'],
+      storeName: json['storeName'],
+      adminPhonenumber: json['phoneNumber'],
+      address: jsonDecode(json['address']),
+    );
   }
 }

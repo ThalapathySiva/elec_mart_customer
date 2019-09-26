@@ -6,6 +6,7 @@ import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/UserModel.dart';
 import 'package:elec_mart_customer/screens/edit_address.dart';
+import 'package:elec_mart_customer/screens/graphql/customerValidate.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -22,7 +23,7 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
-  Map input = {
+  Map<String, String> input = {
     "name": "",
     "phoneNumber": "",
     "email": "",
@@ -30,6 +31,7 @@ class _CreateAccountState extends State<CreateAccount> {
     "confirmPassword": ""
   };
   String errors = "";
+  bool isPasswordValid = true;
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +58,7 @@ class _CreateAccountState extends State<CreateAccount> {
             ],
           ),
         ),
-        if (input['name'] != "" &&
-            input['phoneNumber'] != "" &&
-            input['password'] != "" &&
-            input['email'] != "" &&
-            input['password'] == input['confirmPassword'])
-          Container(child: mutationComponent()),
+        mutationComponent(),
       ],
     );
   }
@@ -80,36 +77,7 @@ class _CreateAccountState extends State<CreateAccount> {
               Navigator.pop(context);
             },
           ),
-          isLoading
-              ? CupertinoActivityIndicator()
-              : PrimaryButtonWidget(
-                  buttonText: "Next",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OTPScreen(
-                                phoneNumber: input["phoneNumber"],
-                                onOTPIncorrect: () {
-                                  print("SOMETHING WRONG HAPPENED!!!");
-                                },
-                                onOTPSuccess: () {
-                                  print('ON OTP SUCCESS HAS BEEN CALLED!!!');
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EditAddress()));
-                                  mutation({
-                                    "name": input['name'],
-                                    "phoneNumber": input['phoneNumber'],
-                                    "email": input['email'],
-                                    "password": input['password'],
-                                  });
-                                },
-                              )),
-                    );
-                  },
-                )
+          isLoading ? CupertinoActivityIndicator() : validateMutation(mutation)
         ],
       ),
     );
@@ -131,6 +99,7 @@ class _CreateAccountState extends State<CreateAccount> {
         ),
         SizedBox(height: 20),
         CustomTextField(
+          maxLength: 10,
           isNumeric: true,
           labelText: "Phone Number",
           onChanged: (val) {
@@ -159,9 +128,11 @@ class _CreateAccountState extends State<CreateAccount> {
         text("Choose a password", 16, BLACK_COLOR, true),
         SizedBox(height: 30),
         CustomTextField(
+          errorText: isPasswordValid ? null : "Atlease 6 characters needed",
           labelText: "Password",
           onChanged: (val) {
             setState(() {
+              isPasswordValid = val.length >= 6;
               input["password"] = val;
             });
           },
@@ -192,6 +163,71 @@ class _CreateAccountState extends State<CreateAccount> {
     );
   }
 
+  Widget validateMutation(RunMutation runmutation) {
+    return Mutation(
+      options: MutationOptions(
+        document: customerValidate,
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        return PrimaryButtonWidget(
+          buttonText: "Next",
+          onPressed: input['name'] != "" &&
+                  input['phoneNumber'] != "" &&
+                  input['password'] != "" &&
+                  input['email'] != "" &&
+                  input['password'] == input['confirmPassword'] &&
+                  input["password"].length >= 6
+              ? () {
+                  runMutation({
+                    "email": input["email"],
+                    "phoneNumber": input["phoneNumber"]
+                  });
+                }
+              : null,
+        );
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {
+        if (resultData["validateCustomerArguments"]["phoneNumber"] == false &&
+            resultData["validateCustomerArguments"]["email"] == false) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OTPScreen(
+                      phoneNumber: input["phoneNumber"],
+                      onOTPIncorrect: () {
+                        print("SOMETHING WRONG HAPPENED!!!");
+                      },
+                      onOTPSuccess: () {
+                        print('ON OTP SUCCESS HAS BEEN CALLED!!!');
+                        runmutation({
+                          "name": input['name'],
+                          "phoneNumber": input['phoneNumber'],
+                          "email": input['email'],
+                          "password": input['password'],
+                        });
+                      },
+                    )),
+          );
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) => DialogStyle(
+                  content: resultData["validateCustomerArguments"]
+                          ["phoneNumber"]
+                      ? "Phone Number already Existing"
+                      : "E mail already Existing"));
+        }
+      },
+    );
+  }
+
   Widget mutationComponent() {
     return Mutation(
       options: MutationOptions(
@@ -210,15 +246,6 @@ class _CreateAccountState extends State<CreateAccount> {
         final prefs = await SharedPreferences.getInstance();
         final appState = Provider.of<AppState>(context);
 
-        if (resultData['customerRegister']['error'] != null) {
-          setState(() {
-            errors = resultData['customerRegister']['error']['message'];
-          });
-          return showDialog(
-              context: context,
-              builder: (context) => DialogStyle(content: errors));
-        }
-
         if (resultData != null &&
             resultData['customerRegister']['error'] == null) {
           final user =
@@ -232,7 +259,7 @@ class _CreateAccountState extends State<CreateAccount> {
             appState.setToken(token);
             appState.setName(user.name);
             appState.setPhoneNumber(user.phoneNumber);
-            Navigator.push(context,
+            Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => EditAddress()));
           }
         }

@@ -5,6 +5,7 @@ class AppState extends ChangeNotifier {
   String userJwtToken = "";
   String userName = "";
   String phno = "";
+  RangeValues rangeValues = RangeValues(0, 100000);
   String searchText = "";
   AppState() {
     getToken();
@@ -47,6 +48,13 @@ class AppState extends ChangeNotifier {
     searchText = text;
     notifyListeners();
   }
+
+  void setRangeValues(RangeValues r) {
+    rangeValues = r;
+    notifyListeners();
+  }
+
+  RangeValues get rangeValue => rangeValues;
 
   String get jwtToken => userJwtToken;
 

@@ -2,7 +2,17 @@ import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/models/UserModel.dart';
+import 'package:elec_mart_customer/screens/nav_screens.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'graphql/updateCustomerAddress.dart';
+import 'otp.dart';
 
 class ChangeNumber extends StatefulWidget {
   @override
@@ -10,6 +20,7 @@ class ChangeNumber extends StatefulWidget {
 }
 
 class _ChangeNumber extends State<ChangeNumber> {
+  String newPhoneNumber = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +34,7 @@ class _ChangeNumber extends State<ChangeNumber> {
         AppTitleWidget(),
         texts(),
         textFields(),
-        continuee(),
+        mutationComponent(),
       ],
     );
   }
@@ -48,20 +59,43 @@ class _ChangeNumber extends State<ChangeNumber> {
     return Container(
       padding: EdgeInsets.all(24),
       child: CustomTextField(
+        isNumeric: true,
+        maxLength: 10,
         labelText: "New Phone Number",
-        onChanged: (val) {},
+        onChanged: (val) {
+          setState(() {
+            newPhoneNumber = val;
+          });
+        },
       ),
     );
   }
 
-  Widget continuee() {
+  Widget continuee(RunMutation runMutation) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Container(
             padding: EdgeInsets.all(24),
-            child:
-                PrimaryButtonWidget(buttonText: "Continue", onPressed: () {}))
+            child: PrimaryButtonWidget(
+                buttonText: "Continue",
+                onPressed: newPhoneNumber.length != 10
+                    ? null
+                    : () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OTPScreen(
+                                      phoneNumber: newPhoneNumber,
+                                      onOTPIncorrect: () {
+                                        print("SOMETHING WRONG HAPPENED!!!");
+                                      },
+                                      onOTPSuccess: () {
+                                        runMutation(
+                                            {"phoneNumber": newPhoneNumber});
+                                      },
+                                    )));
+                      }))
       ],
     );
   }
@@ -74,6 +108,47 @@ class _ChangeNumber extends State<ChangeNumber> {
           fontSize: size,
           fontWeight: isBold ? FontWeight.bold : null),
       textAlign: TextAlign.center,
+    );
+  }
+
+  Widget mutationComponent() {
+    final appState = Provider.of<AppState>(context);
+    return Mutation(
+      options: MutationOptions(
+        document: updateCustomerAddress,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return result.loading
+            ? Center(child: CupertinoActivityIndicator())
+            : continuee(runMutation);
+      },
+      update: (Cache cache, QueryResult result) {
+        return cache;
+      },
+      onCompleted: (dynamic resultData) async {
+        final prefs = await SharedPreferences.getInstance();
+        final appState = Provider.of<AppState>(context);
+
+        if (resultData != null &&
+            resultData['updateCustomerAccount']['error'] == null) {
+          final user =
+              UserModel.fromJson(resultData['updateCustomerAccount']['user']);
+          if (user != null) {
+            await prefs.setString('phone number', user.phoneNumber);
+            appState.setPhoneNumber(user.phoneNumber);
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => NavigateScreens()));
+          }
+        }
+      },
     );
   }
 }

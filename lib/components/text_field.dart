@@ -8,9 +8,11 @@ class CustomTextField extends StatelessWidget {
   final bool isSecure;
   final String errorText;
   final bool isNumeric;
+  final int maxLength;
 
   CustomTextField(
-      {this.errorText,
+      {this.maxLength,
+      this.errorText,
       this.labelText,
       this.onChanged,
       this.height,
@@ -30,15 +32,19 @@ class CustomTextField extends StatelessWidget {
       child: TextField(
         obscureText: isSecure,
         onChanged: onChanged,
+        maxLength: maxLength,
         keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
         decoration: InputDecoration(
-            border: InputBorder.none,
-            errorText: errorText,
-            hintText: "$labelText",
-            hintStyle: TextStyle(
-                color: LIGHT_BLUE_COLOR,
-                fontWeight: FontWeight.bold,
-                fontSize: 16)),
+          counter: maxLength == null ? null : Container(),
+          border: InputBorder.none,
+          errorText: errorText,
+          hintText: "$labelText",
+          hintStyle: TextStyle(
+            color: LIGHT_BLUE_COLOR,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }

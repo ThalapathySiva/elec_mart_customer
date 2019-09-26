@@ -63,6 +63,7 @@ class _LoginState extends State<Login> {
           text("Login", 36, PRIMARY_COLOR, true),
           SizedBox(height: 30),
           CustomTextField(
+            maxLength: 10,
             isNumeric: true,
             labelText: "Phone Number",
             onChanged: (val) {

@@ -271,6 +271,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   .sort((a, b) => b.sellingPrice.compareTo(a.sellingPrice));
             }
 
+            inventories = inventories
+                .where((inventory) =>
+                    appState.rangeValue.start <= inventory.sellingPrice &&
+                    appState.rangeValue.end >= inventory.sellingPrice)
+                .toList();
+
             if (sortType == 'Newest') {
               inventories.sort((a, b) => b.date.compareTo(a.date));
             }

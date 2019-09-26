@@ -2,9 +2,9 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
 
 class VendorDetail extends StatelessWidget {
-  final String name, address;
+  final String name, address, storeImage;
 
-  VendorDetail({this.name, this.address});
+  VendorDetail({this.name, this.address, this.storeImage});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,7 @@ class VendorDetail extends StatelessWidget {
       padding: EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
-          Image.asset(
-            "assets/images/Vendor.png",
-          ),
+          Image.network(storeImage, height: 80, width: 80),
           Container(
             padding: EdgeInsets.only(left: 10),
             child: Column(

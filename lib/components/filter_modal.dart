@@ -147,8 +147,8 @@ class _FilterModalState extends State<FilterModal>
                 child: RangeSlider(
                   values: rangeValues,
                   min: 0,
-                  max: 100,
-                  divisions: 5,
+                  max: 100000,
+                  divisions: 10,
                   activeColor: PRIMARY_COLOR,
                   inactiveColor: LIGHT_BLUE_COLOR,
                   onChanged: (RangeValues val) {
@@ -207,6 +207,7 @@ class _FilterModalState extends State<FilterModal>
             setState(() {
               searchText = "";
               currentSortType = "Price (low to high)";
+              appState.setRangeValues(RangeValues(0, 100000));
               isExpanded = false;
               animationController.reverse();
             });
@@ -219,6 +220,8 @@ class _FilterModalState extends State<FilterModal>
           onPressed: () {
             widget.onItemChange(currentSortType);
             appState.setsearchText(searchText);
+            appState.setRangeValues(rangeValues);
+
             setState(() {
               isExpanded = false;
               animationController.reverse();

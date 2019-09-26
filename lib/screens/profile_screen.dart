@@ -126,13 +126,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget addressContainer(Map address) {
+
     return Container(
       padding: EdgeInsets.all(24),
       margin: EdgeInsets.all(20),
       decoration: BoxDecoration(
           border: Border.all(color: PRIMARY_COLOR.withOpacity(0.13)),
           borderRadius: BorderRadius.circular(12)),
-      child: address == {}
+      child: address.length == 0
           ? null
           : Column(
               children: <Widget>[

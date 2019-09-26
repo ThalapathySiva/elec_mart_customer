@@ -103,6 +103,7 @@ class _EditAddressState extends State<EditAddress> {
           ),
           SizedBox(height: 20),
           CustomTextField(
+            maxLength: 10,
             isNumeric: true,
             labelText: "Phone Number",
             onChanged: (val) {

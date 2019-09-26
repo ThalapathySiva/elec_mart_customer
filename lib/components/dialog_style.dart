@@ -24,7 +24,7 @@ class DialogStyle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            content,
+            content == null ? "" : content.split("_").join(" ").toLowerCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,

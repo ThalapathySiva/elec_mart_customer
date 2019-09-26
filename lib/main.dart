@@ -89,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final address = prefs.getBool('address') ?? false;
-    print("address" + address.toString());
     setState(() {
       isAuthenticated = token != null;
       isAddressGave = address;

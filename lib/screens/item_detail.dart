@@ -116,6 +116,7 @@ class _ItemDetailState extends State<ItemDetail> {
           ),
           SizedBox(height: 10),
           VendorDetail(
+            storeImage: widget.inventory.vendor.shopPhotoUrl,
             name: widget.inventory.vendor.storeName,
             address: widget.inventory.vendor.address['addressLine'] +
                 "\n" +
