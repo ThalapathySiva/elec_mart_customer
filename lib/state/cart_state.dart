@@ -29,6 +29,7 @@ class CartState extends ChangeNotifier {
 
   void clearCart() {
     _cartItems = [];
+    totalPrice = 0;
     notifyListeners();
   }
 

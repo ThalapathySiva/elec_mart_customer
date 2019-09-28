@@ -276,6 +276,9 @@ class _CartState extends State<Cart> {
           launch(
               "http://cezhop.herokuapp.com/paywithpaytm?orderId=${order["id"]}");
         } else {
+          cartState.clearCart();
+          isTickCreditCard = false;
+          isTickCOD = false;
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

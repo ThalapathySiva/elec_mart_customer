@@ -66,12 +66,11 @@ class _OrdersState extends State<Orders> {
       orders =
           data.map((f) => OrderModel.fromJson(f)).toList().reversed.toList();
       previousOrders = orders
-          .where((f) =>
-              (f.status == OrderStatuses.CANCELLED_BY_CUSTOMER ||
-                  f.status == OrderStatuses.CANCELLED_BY_STORE ||
-                  f.status == OrderStatuses.DELIVERED_AND_PAID) &&
-              (f.transactionSuccess == false ||
-                  f.paymentMode != "Cash On Delivery"))
+          .where((f) => !((f.status == OrderStatuses.PLACED_BY_CUSTOMER ||
+                  f.status == OrderStatuses.RECEIVED_BY_STORE ||
+                  f.status == OrderStatuses.PICKED_UP) &&
+              (f.transactionSuccess == true ||
+                  f.paymentMode == "Cash On Delivery")))
           .toList();
       activeOrders = orders
           .where((f) =>
