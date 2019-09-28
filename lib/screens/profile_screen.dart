@@ -126,7 +126,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget addressContainer(Map address) {
-
     return Container(
       padding: EdgeInsets.all(24),
       margin: EdgeInsets.all(20),

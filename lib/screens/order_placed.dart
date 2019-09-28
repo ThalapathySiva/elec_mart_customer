@@ -1,6 +1,7 @@
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/screens/nav_screens.dart';
 import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,8 @@ class _OrderPlacedState extends State<OrderPlaced> {
             child: PrimaryButtonWidget(
               buttonText: "Got it",
               onPressed: () {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => Orders()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => NavigateScreens()));
               },
             ),
           )
@@ -79,8 +80,8 @@ class _OrderPlacedState extends State<OrderPlaced> {
         child: SecondaryButton(
             buttonText: "Track Order Status",
             onPressed: () {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Orders()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => NavigateScreens()));
             }));
   }
 
