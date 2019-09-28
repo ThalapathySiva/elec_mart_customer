@@ -39,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               '${appState.phoneNumber}', TextAlign.center, BLACK_COLOR, 16),
           Container(padding: EdgeInsets.only(top: 20)),
           getAddressQuery(),
+          Container(padding: EdgeInsets.only(top: 50)),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -65,6 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: BLACK_COLOR,
             ),
           ),
+          Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
             onTap: () {
               launch("tel://8144479784");
@@ -168,6 +170,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       builder: (QueryResult result, {VoidCallback refetch}) {
         if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
         String addressString =
             result.data["getCustomerInfo"]["user"]["address"];
         Map address = {};

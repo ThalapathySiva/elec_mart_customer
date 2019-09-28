@@ -178,8 +178,10 @@ class _EditAddressState extends State<EditAddress> {
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('address', true);
 
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => NavigateScreens()));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => NavigateScreens()),
+            (v) => false);
       },
     );
   }

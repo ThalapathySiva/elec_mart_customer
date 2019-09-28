@@ -1,5 +1,6 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class VerticalListItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
@@ -33,11 +34,11 @@ class VerticalListItem extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 5, bottom: 5),
             height: 40,
-            child: Text(
-              "$name",
+            child: AutoSizeText(
+              name.length < 16 ? "$name" : "${name.substring(0, 12) + ".."}",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),

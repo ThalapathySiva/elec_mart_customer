@@ -32,7 +32,7 @@ class FilterModal extends StatefulWidget {
 
 class _FilterModalState extends State<FilterModal>
     with SingleTickerProviderStateMixin {
-  RangeValues rangeValues = RangeValues(0, 20);
+  RangeValues rangeValues = RangeValues(0, 100000);
   bool isExpanded = false;
   List<dynamic> categories = ["All"];
 
@@ -161,7 +161,7 @@ class _FilterModalState extends State<FilterModal>
             ],
           ),
           Text(
-            "${rangeValues.start}- ${rangeValues.end}",
+            "₹ ${rangeValues.start}- ₹ ${rangeValues.end}",
             style: TextStyle(fontWeight: FontWeight.bold),
             textAlign: TextAlign.end,
           ),

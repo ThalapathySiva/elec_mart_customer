@@ -44,7 +44,8 @@ class _CartState extends State<Cart> {
           getAddressQuery(),
           Container(height: 3, color: GREY_COLOR),
           paymentMode(),
-          if (isTickCOD || isTickCreditCard && cartState.cartItems.length != 0)
+          if ((isTickCOD || isTickCreditCard) &&
+              cartState.cartItems.length != 0)
             Container(
               padding: EdgeInsets.all(24),
               child: mutationComponent(),

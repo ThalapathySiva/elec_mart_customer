@@ -182,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget listView(List<InventoryItemModel> inventories) {
+    final appState = Provider.of<AppState>(context);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     if (inventories.length == 0) {
@@ -200,6 +201,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+
+    final filteredInventory = inventories
+        .where((item) =>
+            item.name
+                .toLowerCase()
+                .contains(appState.getSearchText.toLowerCase()) &&
+            (item.category == selectedCategory || selectedCategory == "All"))
+        .toList();
     return SizedBox(
       height: height - 160,
       width: width,
@@ -207,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
         separatorBuilder: (BuildContext context, int index) =>
             SizedBox(height: 10),
         padding: EdgeInsets.all(8.0),
-        itemCount: inventories.length,
+        itemCount: filteredInventory.length,
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
@@ -215,22 +224,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          ItemDetail(inventory: inventories[index])));
+                          ItemDetail(inventory: filteredInventory[index])));
             },
-            child: DateTime.now().difference(inventories[index].date).inDays < 7
+            child: DateTime.now()
+                        .difference(filteredInventory[index].date)
+                        .inDays <
+                    7
                 ? HorizontalNewItem(
-                    id: inventories[index].id,
-                    imageURL: inventories[index].images,
-                    name: inventories[index].name,
-                    mrpPrice: inventories[index].originalPrice.toString(),
-                    currentPrice: inventories[index].sellingPrice.toString(),
+                    id: filteredInventory[index].id,
+                    imageURL: filteredInventory[index].images,
+                    name: filteredInventory[index].name,
+                    mrpPrice: filteredInventory[index].originalPrice.toString(),
+                    currentPrice:
+                        filteredInventory[index].sellingPrice.toString(),
                   )
                 : HorizontalListItem(
-                    id: inventories[index].id,
-                    imageURL: inventories[index].images,
-                    name: inventories[index].name,
-                    mrpPrice: inventories[index].originalPrice.toString(),
-                    currentPrice: inventories[index].sellingPrice.toString(),
+                    id: filteredInventory[index].id,
+                    imageURL: filteredInventory[index].images,
+                    name: filteredInventory[index].name,
+                    mrpPrice: filteredInventory[index].originalPrice.toString(),
+                    currentPrice:
+                        filteredInventory[index].sellingPrice.toString(),
                   ),
           );
         },
