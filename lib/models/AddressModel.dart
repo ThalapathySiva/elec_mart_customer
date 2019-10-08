@@ -3,11 +3,13 @@ class AddressModel {
   final String addressLine;
   final String landmark;
   final String city;
+  final String pinCode;
   final String phoneNumber;
 
   AddressModel(
       {this.city,
       this.name,
+      this.pinCode,
       this.addressLine,
       this.landmark,
       this.phoneNumber});
@@ -18,6 +20,7 @@ class AddressModel {
         addressLine: json['addressLine'],
         landmark: json['landmark'],
         city: json['city'],
+        pinCode: json["pinCode"],
         phoneNumber: json['phoneNumber']);
   }
 }

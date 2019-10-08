@@ -148,6 +148,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     BLACK_COLOR, 16),
                 textWidget(
                     '${address["city"]}', TextAlign.start, BLACK_COLOR, 16),
+                textWidget(
+                    '${address["pinCode"]}', TextAlign.start, BLACK_COLOR, 16),
                 textWidget('${address["phoneNumber"]}', TextAlign.start,
                     PRIMARY_COLOR, 16),
               ],

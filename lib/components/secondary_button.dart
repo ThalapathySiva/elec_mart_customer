@@ -5,15 +5,24 @@ class SecondaryButton extends StatelessWidget {
   final String buttonText;
   final Function onPressed;
   final IconData icon;
+  final Color borderColor;
+  final Color textColor;
 
-  SecondaryButton({this.buttonText, this.onPressed, this.icon});
+  SecondaryButton(
+      {this.textColor,
+      this.borderColor,
+      this.buttonText,
+      this.onPressed,
+      this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: OutlineButton(
           onPressed: onPressed,
-          borderSide: BorderSide(color: PRIMARY_COLOR, width: 1.5),
+          borderSide: BorderSide(
+              color: borderColor == null ? PRIMARY_COLOR : borderColor,
+              width: 1.5),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
           child: Row(
@@ -23,7 +32,7 @@ class SecondaryButton extends StatelessWidget {
                 buttonText,
                 style: TextStyle(
                     fontSize: 16,
-                    color: PRIMARY_COLOR,
+                    color: textColor == null ? PRIMARY_COLOR : textColor,
                     fontWeight: FontWeight.bold),
               ),
               if (icon != null) ...[

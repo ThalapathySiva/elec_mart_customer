@@ -5,6 +5,7 @@ import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/edit_address.dart';
 import 'package:elec_mart_customer/screens/graphql/create_new_order.dart';
+import 'package:elec_mart_customer/screens/nav_screens.dart';
 import 'package:elec_mart_customer/screens/order_placed.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:elec_mart_customer/state/cart_state.dart';
@@ -35,6 +36,9 @@ class _CartState extends State<Cart> {
 
   Widget layout() {
     final cartState = Provider.of<CartState>(context);
+    if (cartState.cartItems.length == 0) {
+      return whenCartEmpty();
+    }
     return Container(
       child: ListView(
         children: <Widget>[
@@ -106,6 +110,42 @@ class _CartState extends State<Cart> {
           color: color,
           fontSize: size,
           fontWeight: isBold ? FontWeight.bold : null),
+    );
+  }
+
+  Widget whenCartEmpty() {
+    return ListView(
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            SizedBox(height: 120),
+            Image.asset("assets/images/cactus.png", height: 256, width: 256),
+            text("Your cart is empty!", 30, PRIMARY_COLOR.withOpacity(0.3),
+                false),
+            SizedBox(height: 20),
+            Text(
+              "Browse our collection and add items to the cart.",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: PRIMARY_COLOR.withOpacity(0.3),
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 50),
+            SecondaryButton(
+              buttonText: "Browse store",
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NavigateScreens(
+                              selectedIndex: 0,
+                            )));
+              },
+            )
+          ],
+        )
+      ],
     );
   }
 
@@ -206,6 +246,7 @@ class _CartState extends State<Cart> {
           text("${address["addressLine"]}", 14, BLACK_COLOR, true),
           text("${address["city"]}", 14, BLACK_COLOR, true),
           text("${address["phoneNumber"]}", 14, BLACK_COLOR, true),
+          text("${address["pinCode"]}", 14, BLACK_COLOR, true),
         ],
       ),
     );

@@ -15,10 +15,12 @@ class OrderModel {
   final DateTime updatedDate;
   final String paymentMode;
   final VendorModel vendor;
+  final int pinCode;
   final bool transactionSuccess;
 
   OrderModel(
-      {this.paymentMode,
+      {this.pinCode,
+      this.paymentMode,
       this.id,
       this.orderNo,
       this.address,

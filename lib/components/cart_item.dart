@@ -32,6 +32,7 @@ class CartItem extends StatelessWidget {
           Image.network(
             "$imageUrl",
             width: 80,
+            height: 80,
           ),
           Container(margin: EdgeInsets.only(left: 10)),
           Container(

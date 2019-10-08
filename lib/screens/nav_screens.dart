@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 
 class NavigateScreens extends StatefulWidget {
+  final int selectedIndex;
+
+  NavigateScreens({this.selectedIndex = 0});
   @override
   _NavigateScreensState createState() => _NavigateScreensState();
 }

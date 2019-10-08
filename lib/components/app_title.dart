@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class AppTitleWidget extends StatelessWidget {
   final Function onBackPressed;
-  AppTitleWidget({this.onBackPressed});
+  final String title;
+  AppTitleWidget({this.title, this.onBackPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,15 @@ class AppTitleWidget extends StatelessWidget {
               }
             },
           ),
+          if (title != null)
+            Text(
+              title,
+              style: TextStyle(
+                color: PRIMARY_COLOR,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            )
         ],
       ),
     );

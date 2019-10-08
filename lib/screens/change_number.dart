@@ -168,8 +168,10 @@ class _ChangeNumber extends State<ChangeNumber> {
           if (user != null) {
             await prefs.setString('phone number', user.phoneNumber);
             appState.setPhoneNumber(user.phoneNumber);
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => NavigateScreens()));
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => NavigateScreens(selectedIndex: 3)));
           }
         }
       },

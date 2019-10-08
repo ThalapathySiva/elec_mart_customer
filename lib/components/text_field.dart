@@ -8,10 +8,12 @@ class CustomTextField extends StatelessWidget {
   final bool isSecure;
   final String errorText;
   final bool isNumeric;
+  final Color color;
   final int maxLength;
 
   CustomTextField(
-      {this.maxLength,
+      {this.color,
+      this.maxLength,
       this.errorText,
       this.labelText,
       this.onChanged,
@@ -27,7 +29,7 @@ class CustomTextField extends StatelessWidget {
       padding: EdgeInsets.only(left: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: LIGHT_BLUE_COLOR.withOpacity(0.03),
+        color: color == null ? LIGHT_BLUE_COLOR.withOpacity(0.03) : color,
       ),
       child: TextField(
         obscureText: isSecure,

@@ -158,6 +158,7 @@ class _OrderDetailState extends State<OrderDetail> {
           text("${widget.order.address.addressLine},", 14, BLACK_COLOR, true),
           text("${widget.order.address.city}", 14, BLACK_COLOR, true),
           text("${widget.order.address.phoneNumber}", 14, PRIMARY_COLOR, true),
+          text("${widget.order.address.pinCode}", 14, PRIMARY_COLOR, true),
         ],
       ),
     );
@@ -193,7 +194,8 @@ class _OrderDetailState extends State<OrderDetail> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NavigateScreens(),
+                          builder: (context) =>
+                              NavigateScreens(selectedIndex: 2),
                         ),
                       );
                     },

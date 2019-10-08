@@ -25,7 +25,8 @@ class _EditAddressState extends State<EditAddress> {
     "Mobile Number": "",
     "Address": "",
     "Landmark": "",
-    "City": ""
+    "City": "",
+    "pinCode": ""
   };
 
   @override
@@ -103,6 +104,16 @@ class _EditAddressState extends State<EditAddress> {
           ),
           SizedBox(height: 20),
           CustomTextField(
+            isNumeric: true,
+            labelText: "Pincode",
+            onChanged: (val) {
+              setState(() {
+                input['pinCode'] = val;
+              });
+            },
+          ),
+          SizedBox(height: 20),
+          CustomTextField(
             maxLength: 10,
             isNumeric: true,
             labelText: "Phone Number",
@@ -117,7 +128,8 @@ class _EditAddressState extends State<EditAddress> {
               input['Mobile Number'] != "" &&
               input['Address'] != "" &&
               input['Landmark'] != "" &&
-              input['City'] != "")
+              input['City'] != "" &&
+              input['pinCode'] != "")
             Container(
               height: 50,
               width: 360,
@@ -165,7 +177,8 @@ class _EditAddressState extends State<EditAddress> {
                       "phoneNumber": input['Mobile Number'],
                       "addressLine": input["Address"],
                       "landmark": input["Landmark"],
-                      "city": input['City']
+                      "city": input['City'],
+                      "pinCode": input['pinCode']
                     }
                   });
                 },

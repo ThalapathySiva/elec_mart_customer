@@ -28,21 +28,31 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: layout(),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/image.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: layout(),
+      ),
     );
   }
 
   Widget layout() {
     return ListView(
       children: <Widget>[
-        Image.asset("assets/images/image.png",
-            fit: BoxFit.fitWidth,
-            height: 300,
-            width: MediaQuery.of(context).size.width),
+        Container(
+            padding: EdgeInsets.only(left: 24, right: 24, top: 85),
+            child: Image.asset("assets/images/logo.png")),
         login(),
+        SizedBox(height: 80),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 100),
           child: SecondaryButton(
+            borderColor: WHITE_COLOR,
+            textColor: WHITE_COLOR,
             buttonText: "Create Account",
             onPressed: () {
               Navigator.push(context,
@@ -60,9 +70,9 @@ class _LoginState extends State<Login> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          text("Login", 36, PRIMARY_COLOR, true),
-          SizedBox(height: 30),
+          SizedBox(height: 100),
           CustomTextField(
+            color: WHITE_COLOR,
             maxLength: 10,
             isNumeric: true,
             labelText: "Phone Number",
@@ -72,8 +82,9 @@ class _LoginState extends State<Login> {
               });
             },
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 30),
           CustomTextField(
+            color: WHITE_COLOR,
             labelText: "Password",
             onChanged: (val) {
               setState(() {
@@ -118,6 +129,8 @@ class _LoginState extends State<Login> {
             : Align(
                 alignment: Alignment.bottomRight,
                 child: PrimaryButtonWidget(
+                  borderColor: WHITE_COLOR,
+                  color: Colors.transparent,
                   buttonText: "Login",
                   onPressed: () {
                     runMutation({

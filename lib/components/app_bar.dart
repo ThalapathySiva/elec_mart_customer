@@ -9,7 +9,6 @@ class CustomAppBar extends StatefulWidget {
   final IconData iconRight;
   final bool isFilter;
   final bool isExpanded;
-  
 
   const CustomAppBar(
       {this.isExpanded,
@@ -36,7 +35,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Image.asset(
-                "assets/images/Vendor.png",
+                "assets/images/flutter_logo.png",
                 height: 30,
                 width: 30,
               ),

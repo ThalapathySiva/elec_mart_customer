@@ -1,4 +1,5 @@
 import 'package:elec_mart_customer/components/order_status_component.dart';
+import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/constants/strings.dart';
 import 'package:elec_mart_customer/models/OrderModel.dart';
@@ -30,6 +31,7 @@ class _OrdersState extends State<Orders> {
       child: Container(
         padding: EdgeInsets.all(24),
         child: ListView(
+          physics: BouncingScrollPhysics(),
           children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,19 +150,30 @@ class _OrdersState extends State<Orders> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   text("${orders[index].paymentMode}", 14, PRIMARY_COLOR, true),
-                  Spacer(),
-                  if (orders[index].paymentMode != "Cash On Delivery")
-                    text(
-                        orders[index].transactionSuccess
-                            ? "Transaction Success"
-                            : "Transaction Failed",
-                        14,
-                        orders[index].transactionSuccess
-                            ? Colors.green
-                            : Colors.red,
-                        true),
                 ],
               ),
+              if (orders[index].paymentMode != "Cash On Delivery")
+                Divider(thickness: 1, height: 10),
+              if (orders[index].paymentMode != "Cash On Delivery")
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    if (orders[index].paymentMode != "Cash On Delivery")
+                      text(
+                          orders[index].transactionSuccess
+                              ? "Transaction Success"
+                              : "Transaction Failed",
+                          14,
+                          orders[index].transactionSuccess
+                              ? Colors.green
+                              : Colors.red,
+                          true),
+                    Spacer(),
+                    if (orders[index].transactionSuccess == false)
+                      text("${orders[index].paymentMode}", 14, PRIMARY_COLOR,
+                          true),
+                  ],
+                ),
             ],
           ),
         ),
@@ -210,22 +223,46 @@ class _OrdersState extends State<Orders> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   text("${orders[index].paymentMode}", 14, PRIMARY_COLOR, true),
-                  Spacer(),
-                  if (orders[index].paymentMode != "Cash On Delivery")
-                    text(
-                        orders[index].transactionSuccess
-                            ? "Transaction Success"
-                            : "Transaction Failed",
-                        14,
-                        orders[index].transactionSuccess
-                            ? Colors.green
-                            : Colors.red,
-                        true),
                 ],
               ),
+              if (orders[index].paymentMode != "Cash On Delivery")
+                Divider(thickness: 1, height: 10),
+              if (orders[index].paymentMode != "Cash On Delivery")
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    if (orders[index].paymentMode != "Cash On Delivery")
+                      text(
+                          orders[index].transactionSuccess
+                              ? "Transaction Success"
+                              : "Transaction Failed",
+                          14,
+                          orders[index].transactionSuccess
+                              ? Colors.green
+                              : Colors.red,
+                          true),
+                    Spacer(),
+                    if (orders[index].transactionSuccess == false) tryAgain()
+                  ],
+                ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget tryAgain() {
+    return InkWell(
+      onTap: () {},
+      child: Row(
+        children: <Widget>[
+          text("Try Again", 14, PRIMARY_COLOR, true),
+          Icon(
+            Icons.keyboard_arrow_right,
+            color: PRIMARY_COLOR,
+          )
+        ],
       ),
     );
   }

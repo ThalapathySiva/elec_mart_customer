@@ -6,6 +6,7 @@ import 'package:elec_mart_customer/components/vertical_new_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/screens/item_detail.dart';
+import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(children: <Widget>[
         Positioned(top: 80, child: getInventoryQuery()),
         Positioned(top: 90, right: 10, child: options()),
+        Positioned(top: 90, left: 10, child: filtersApplied()),
         Positioned(
             top: 0,
             child: FilterModal(
@@ -63,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget options() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           height: 40,
@@ -250,6 +253,25 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  Widget filtersApplied() {
+    return Container(
+        child: Row(
+          children: <Widget>[
+            text("Filters applied", 16, PRIMARY_COLOR, true),
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  FeatherIcons.x,
+                  size: 16,
+                  color: PRIMARY_COLOR,
+                ))
+          ],
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            color: GREY_COLOR));
   }
 
   Widget getInventoryQuery({bool category = false}) {

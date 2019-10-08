@@ -4,14 +4,21 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 class PrimaryButtonWidget extends StatelessWidget {
   final String buttonText;
   final Function onPressed;
+  final Color borderColor;
+  final Color color;
   final IconData icon;
 
-  PrimaryButtonWidget({this.buttonText, this.onPressed, this.icon});
+  PrimaryButtonWidget(
+      {this.borderColor,
+      this.color,
+      this.buttonText,
+      this.onPressed,
+      this.icon});
 
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      color: PRIMARY_COLOR,
+      color: color == null ? PRIMARY_COLOR : color,
       onPressed: onPressed,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -33,7 +40,11 @@ class PrimaryButtonWidget extends StatelessWidget {
           ],
         ],
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+          side: BorderSide(
+              color: borderColor == null ? Colors.transparent : borderColor,
+              width: 1.5),
+          borderRadius: BorderRadius.circular(12)),
     );
   }
 }
