@@ -1,5 +1,4 @@
 import 'package:elec_mart_customer/components/order_status_component.dart';
-import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/constants/strings.dart';
 import 'package:elec_mart_customer/models/OrderModel.dart';
@@ -7,6 +6,7 @@ import 'package:elec_mart_customer/screens/order_detail.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/rendering.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +29,7 @@ class _OrdersState extends State<Orders> {
   Widget layout() {
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.only(left: 24, right: 24, top: 24),
         child: ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
@@ -132,7 +132,7 @@ class _OrdersState extends State<Orders> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  text("Order ID: ${orders[index].orderNo}", 16, BLACK_COLOR,
+                  text("Order ID: BS${orders[index].orderNo}", 16, BLACK_COLOR,
                       true),
                   text("Rs. ${orders[index].getTotalPrice()}", 16,
                       PRIMARY_COLOR, true)
@@ -187,74 +187,84 @@ class _OrdersState extends State<Orders> {
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemCount: orders.length,
-      itemBuilder: (context, index) => InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => OrderDetail(order: orders[index])));
-        },
-        child: Container(
-          padding: EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              color: LIGHT_BLUE_COLOR.withOpacity(0.03)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      itemBuilder: (context, index) => Container(
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            color: LIGHT_BLUE_COLOR.withOpacity(0.03)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            OrderDetail(order: orders[index])));
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  text("Order ID. ${orders[index].orderNo}", 16, BLACK_COLOR,
-                      true),
-                  text("Rs. ${orders[index].getTotalPrice()}", 16,
-                      PRIMARY_COLOR, true)
-                ],
-              ),
-              SizedBox(height: 5),
-              text("${orders[index].cartItems.length} items", 14, BLACK_COLOR,
-                  false),
-              SizedBox(height: 10),
-              OrderStatusIndicatorWidget(
-                orderStatus: orders[index].status.toUpperCase(),
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  text("${orders[index].paymentMode}", 14, PRIMARY_COLOR, true),
-                ],
-              ),
-              if (orders[index].paymentMode != "Cash On Delivery")
-                Divider(thickness: 1, height: 10),
-              if (orders[index].paymentMode != "Cash On Delivery")
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    if (orders[index].paymentMode != "Cash On Delivery")
-                      text(
-                          orders[index].transactionSuccess
-                              ? "Transaction Success"
-                              : "Transaction Failed",
-                          14,
-                          orders[index].transactionSuccess
-                              ? Colors.green
-                              : Colors.red,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      text("Order ID: BS${orders[index].orderNo}", 16,
+                          BLACK_COLOR, true),
+                      text("Rs. ${orders[index].getTotalPrice()}", 16,
+                          PRIMARY_COLOR, true)
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  text("${orders[index].cartItems.length} items", 14,
+                      BLACK_COLOR, false),
+                  SizedBox(height: 10),
+                  OrderStatusIndicatorWidget(
+                    orderStatus: orders[index].status.toUpperCase(),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      text("${orders[index].paymentMode}", 14, PRIMARY_COLOR,
                           true),
-                    Spacer(),
-                    if (orders[index].transactionSuccess == false) tryAgain()
-                  ],
-                ),
-            ],
-          ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (orders[index].paymentMode != "Cash On Delivery")
+              Divider(thickness: 1, height: 10),
+            if (orders[index].paymentMode != "Cash On Delivery")
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  if (orders[index].paymentMode != "Cash On Delivery")
+                    text(
+                        orders[index].transactionSuccess
+                            ? "Transaction Success"
+                            : "Transaction Failed",
+                        14,
+                        orders[index].transactionSuccess
+                            ? Colors.green
+                            : Colors.red,
+                        true),
+                  Spacer(),
+                  if (orders[index].transactionSuccess == false)
+                    tryAgain(orders[index].id)
+                ],
+              ),
+          ],
         ),
       ),
     );
   }
 
-  Widget tryAgain() {
+  Widget tryAgain(String id) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        launch("http://cezhop.herokuapp.com/paywithpaytm?orderId=$id");
+      },
       child: Row(
         children: <Widget>[
           text("Try Again", 14, PRIMARY_COLOR, true),

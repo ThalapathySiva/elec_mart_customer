@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: WHITE_COLOR,
       body: ListView(
         children: <Widget>[
-          Container(padding: EdgeInsets.only(top: 20)),
+          Container(padding: EdgeInsets.only(top: 24)),
           textWidget('Profile', TextAlign.center, BLACK_COLOR, 16),
           Container(padding: EdgeInsets.only(top: 40)),
           textWidget('${appState.name}', TextAlign.center, PRIMARY_COLOR, 24),

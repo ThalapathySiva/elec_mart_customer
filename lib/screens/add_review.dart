@@ -5,6 +5,7 @@ import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/rating.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/constants/profanityFilter.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/screens/graphql/add_review.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddReview extends StatefulWidget {
   final InventoryItemModel inventory;
@@ -26,6 +26,7 @@ class AddReview extends StatefulWidget {
 class _AddReviewState extends State<AddReview> {
   String errors = "";
   double userRating = 0;
+
   String userReview = "";
   @override
   Widget build(BuildContext context) {
@@ -74,14 +75,21 @@ class _AddReviewState extends State<AddReview> {
       ),
       Container(
         padding: EdgeInsets.all(24),
-        height: 274,
-        width: 363,
         child: CustomTextField(
+          maxLine: 10,
           labelText: "Type your question here.",
           onChanged: (v) {
             setState(() {
               userReview = v;
             });
+            if (ProfanityFilter().hasProfanity(userReview)) {
+              showDialog(
+                  context: context,
+                  builder: (context) => DialogStyle(
+                        content: "Don't Include Vulgar Words",
+                        title: "Vulgar Word Found",
+                      ));
+            }
           },
         ),
       ),
@@ -96,7 +104,10 @@ class _AddReviewState extends State<AddReview> {
                 color: LIGHT_BLUE_COLOR),
           )),
       SizedBox(height: 10),
-      if (userRating != 0 && userReview != "") mutationComponent()
+      if (userRating != 0 &&
+          userReview != "" &&
+          ProfanityFilter().hasProfanity(userReview) == false)
+        mutationComponent()
     ]);
   }
 
@@ -134,12 +145,9 @@ class _AddReviewState extends State<AddReview> {
               );
       },
       update: (Cache cache, QueryResult result) {
-        print("fgf" + result.errors.toString());
         return cache;
       },
       onCompleted: (dynamic resultData) async {
-        final prefs = await SharedPreferences.getInstance();
-
         if (resultData['addReview']['error'] != null) {
           setState(() {
             errors = resultData['addReview']['error']['message'];
@@ -149,7 +157,6 @@ class _AddReviewState extends State<AddReview> {
               builder: (context) => DialogStyle(content: errors));
         }
         if (resultData != null && resultData['addReview']['error'] == null) {
-          print(resultData);
           Navigator.pop(context);
         }
       },

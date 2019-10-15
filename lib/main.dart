@@ -1,3 +1,4 @@
+import 'package:elec_mart_customer/components/material_display_connection_status_overlay_widget_dart.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/edit_address.dart';
 import 'package:elec_mart_customer/screens/login.dart';
@@ -64,11 +65,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         builder: (_) => AppState(),
         child: ChangeNotifierProvider<CartState>(
           builder: (_) => CartState(),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-                fontFamily: 'Quicksand', scaffoldBackgroundColor: WHITE_COLOR),
-            home: chooseHome(),
+          child: MaterialDisplayConnectionStatusOverlayWidget(
+            url: "www.google.com",
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                  fontFamily: 'Quicksand',
+                  scaffoldBackgroundColor: WHITE_COLOR),
+              home: chooseHome(),
+            ),
           ),
         ),
       )),

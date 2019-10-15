@@ -12,9 +12,21 @@ query GetCustomerOrders{
       }
       cartItems{
         inventory{
-       name
-       sellingPrice
-       imageUrl
+      id,
+      name,
+      originalPrice,
+      sellingPrice,
+      description,
+      imageUrl,
+      vendor{
+        shopPhotoUrl,
+        storeName,
+        address,
+        phoneNumber
+      }
+      category,
+      inStock,
+      date,
         }
       }
       status

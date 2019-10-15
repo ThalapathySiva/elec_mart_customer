@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 
 class DialogStyle extends StatelessWidget {
   final String content;
+  final String title;
 
-  DialogStyle({this.content});
+  DialogStyle({this.title='Error Occured', this.content});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: Center(
         child: Text(
-          'Error Occured',
+          title,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

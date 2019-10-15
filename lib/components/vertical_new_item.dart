@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class VerticalNewItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
   final String id;
+  final bool outOfStock;
   final List imageURL;
 
   VerticalNewItem({
     this.imageURL,
+    this.outOfStock = false,
     this.id,
     this.name,
     this.currentPrice,
@@ -21,6 +23,7 @@ class VerticalNewItem extends StatelessWidget {
         Container(
           padding: EdgeInsets.only(top: 10),
           child: VerticalListItem(
+            outOfStock: outOfStock,
             id: id,
             imageURL: imageURL,
             name: name,

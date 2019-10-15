@@ -7,11 +7,13 @@ class HorizontalListItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
   final List imageURL;
   final bool showBorder;
+  final bool outOfStock;
   final String id;
 
   HorizontalListItem(
       {this.id,
       this.imageURL,
+      this.outOfStock = false,
       this.name,
       this.currentPrice,
       this.mrpPrice,
@@ -51,6 +53,13 @@ class HorizontalListItem extends StatelessWidget {
                 ),
                 priceWidget(mrpPrice, context),
                 priceWidget(currentPrice, context, currentPrice: true),
+                SizedBox(height: 10),
+                if (outOfStock)
+                  Text("OUT OF STOCK",
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: RED_COLOR,
+                          fontWeight: FontWeight.bold)),
               ],
             ),
           ),

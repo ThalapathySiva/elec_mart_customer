@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 
 class HorizontalNewItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
+  final bool outOfStock;
   final String id;
   final List imageURL;
 
   HorizontalNewItem({
     this.id,
+    this.outOfStock = false,
     this.imageURL,
     this.name,
     this.currentPrice,
@@ -21,6 +23,7 @@ class HorizontalNewItem extends StatelessWidget {
         Container(
           padding: EdgeInsets.only(top: 10),
           child: HorizontalListItem(
+            outOfStock:outOfStock,
             id: id,
             imageURL: imageURL,
             name: name,

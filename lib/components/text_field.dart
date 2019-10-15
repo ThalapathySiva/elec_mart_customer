@@ -7,12 +7,14 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final bool isSecure;
   final String errorText;
+  final int maxLine;
   final bool isNumeric;
   final Color color;
   final int maxLength;
 
   CustomTextField(
-      {this.color,
+      {this.maxLine,
+      this.color,
       this.maxLength,
       this.errorText,
       this.labelText,
@@ -35,6 +37,7 @@ class CustomTextField extends StatelessWidget {
         obscureText: isSecure,
         onChanged: onChanged,
         maxLength: maxLength,
+        maxLines: maxLine,
         keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
         decoration: InputDecoration(
           counter: maxLength == null ? null : Container(),

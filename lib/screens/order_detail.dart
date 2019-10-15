@@ -5,6 +5,7 @@ import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/constants/strings.dart';
 import 'package:elec_mart_customer/models/OrderModel.dart';
+import 'package:elec_mart_customer/screens/item_detail.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _OrderDetailState extends State<OrderDetail> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          text("Order ID. ${widget.order.orderNo}", 16, BLACK_COLOR, true),
+          text("Order ID: BS${widget.order.orderNo}", 16, BLACK_COLOR, true),
           text("Rs. ${widget.order.getTotalPrice()}", 24, PRIMARY_COLOR, true),
         ],
       ),
@@ -137,10 +138,23 @@ class _OrderDetailState extends State<OrderDetail> {
       shrinkWrap: true,
       itemCount: widget.order.cartItems.length,
       itemBuilder: (context, index) {
-        return CartItem(
-          imageUrl: "${widget.order.cartItems[index].imageURL[0]}",
-          name: "${widget.order.cartItems[index].name}",
-          currentPrice: "Rs. ${widget.order.cartItems[index].price}",
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ItemDetail(
+                          inventory: widget.order.cartItems[index],
+                          description:
+                              widget.order.cartItems[index].description,
+                          name: widget.order.cartItems[index].name,
+                        )));
+          },
+          child: CartItem(
+            imageUrl: "${widget.order.cartItems[index].imageURL[0]}",
+            name: "${widget.order.cartItems[index].name}",
+            currentPrice: "Rs. ${widget.order.cartItems[index].price}",
+          ),
         );
       },
     );

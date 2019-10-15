@@ -44,7 +44,7 @@ class _LoginState extends State<Login> {
     return ListView(
       children: <Widget>[
         Container(
-            padding: EdgeInsets.only(left: 24, right: 24, top: 85),
+            padding: EdgeInsets.only(left: 24, right: 24, top: 50),
             child: Image.asset("assets/images/logo.png")),
         login(),
         SizedBox(height: 80),

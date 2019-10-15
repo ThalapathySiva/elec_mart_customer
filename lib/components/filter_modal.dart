@@ -15,16 +15,10 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
 class FilterModal extends StatefulWidget {
-  final String sortType;
-  final ValueChanged<String> onItemChange;
   final String selectedCategory;
   final ValueChanged<String> onCategoryChange;
 
-  const FilterModal(
-      {this.sortType,
-      this.onItemChange,
-      this.selectedCategory,
-      this.onCategoryChange});
+  const FilterModal({this.selectedCategory, this.onCategoryChange});
 
   @override
   _FilterModalState createState() => _FilterModalState();
@@ -40,7 +34,7 @@ class _FilterModalState extends State<FilterModal>
   AnimationController animationController;
   Animation<Offset> animationOffset;
 
-  String currentSortType;
+  String currentSortType = "Price (low to high)";
   String searchText = "";
 
   @override
@@ -52,8 +46,6 @@ class _FilterModalState extends State<FilterModal>
 
     animationOffset = Tween<Offset>(end: Offset(0, 0), begin: Offset(0.0, -1.0))
         .animate(animationController);
-
-    currentSortType = widget.sortType;
   }
 
   @override
@@ -171,6 +163,7 @@ class _FilterModalState extends State<FilterModal>
   }
 
   Widget sortBy() {
+    final appState = Provider.of<AppState>(context);
     return Container(
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Row(
@@ -188,7 +181,7 @@ class _FilterModalState extends State<FilterModal>
                 currentSortType = val;
               });
             },
-            itemValue: widget.sortType,
+            itemValue: appState.getsortType,
           )
         ],
       ),
@@ -211,16 +204,15 @@ class _FilterModalState extends State<FilterModal>
               isExpanded = false;
               animationController.reverse();
             });
-            widget.onItemChange(currentSortType);
-            appState.setsearchText(searchText);
+            appState.clearFilter();
           },
         ),
         PrimaryButtonWidget(
           buttonText: "Apply Filters",
           onPressed: () {
-            widget.onItemChange(currentSortType);
             appState.setsearchText(searchText);
             appState.setRangeValues(rangeValues);
+            appState.setSortType(currentSortType);
 
             setState(() {
               isExpanded = false;

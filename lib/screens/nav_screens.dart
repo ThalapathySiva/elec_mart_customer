@@ -5,6 +5,7 @@ import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:elec_mart_customer/screens/profile_screen.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'home.dart';
 
@@ -18,6 +19,13 @@ class NavigateScreens extends StatefulWidget {
 
 class _NavigateScreensState extends State<NavigateScreens> {
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    selectedIndex = widget.selectedIndex;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +83,7 @@ class _NavigateScreensState extends State<NavigateScreens> {
               FlatButton(
                 child: Text('YES'),
                 onPressed: () {
-                  Navigator.of(context).pop(true);
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                 },
               ),
             ],

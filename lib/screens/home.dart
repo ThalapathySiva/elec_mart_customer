@@ -28,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String query = "";
   String selectedCategory = "All";
   String name = "";
-  String sortType = "Price (low to high)";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,18 +39,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       child: Stack(children: <Widget>[
-        Positioned(top: 80, child: getInventoryQuery()),
-        Positioned(top: 90, right: 10, child: options()),
-        Positioned(top: 90, left: 10, child: filtersApplied()),
+        Positioned(
+            top: 50,
+            child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: getInventoryQuery())),
         Positioned(
             top: 0,
             child: FilterModal(
-              sortType: sortType,
-              onItemChange: (val) {
-                setState(() {
-                  sortType = val;
-                });
-              },
               selectedCategory: selectedCategory,
               onCategoryChange: (val) {
                 setState(() {
@@ -108,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget gridView(List<InventoryItemModel> inventories) {
     final appState = Provider.of<AppState>(context);
-    final height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height - 55;
     final width = MediaQuery.of(context).size.width;
     if (inventories.length == 0) {
       return Container(
@@ -149,19 +145,22 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, index) {
             return Center(
               child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ItemDetail(inventory: filteredInventory[index])),
-                    );
-                  },
+                  onTap: filteredInventory[index].inStock <= 0
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ItemDetail(
+                                    inventory: filteredInventory[index])),
+                          );
+                        },
                   child: DateTime.now()
                               .difference(inventories[index].date)
                               .inDays <
                           7
                       ? VerticalNewItem(
+                          outOfStock: filteredInventory[index].inStock <= 0,
                           id: filteredInventory[index].id,
                           imageURL: filteredInventory[index].images,
                           name: filteredInventory[index].name,
@@ -171,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               filteredInventory[index].sellingPrice.toString(),
                         )
                       : VerticalListItem(
+                          outOfStock: filteredInventory[index].inStock <= 0,
                           id: filteredInventory[index].id,
                           imageURL: filteredInventory[index].images,
                           name: filteredInventory[index].name,
@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
             (item.category == selectedCategory || selectedCategory == "All"))
         .toList();
     return SizedBox(
-      height: height - 160,
+      height: height - 190,
       width: width,
       child: ListView.separated(
         separatorBuilder: (BuildContext context, int index) =>
@@ -222,18 +222,21 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: filteredInventory.length,
         itemBuilder: (context, index) {
           return InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          ItemDetail(inventory: filteredInventory[index])));
-            },
+            onTap: filteredInventory[index].inStock <= 0
+                ? null
+                : () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ItemDetail(
+                                inventory: filteredInventory[index])));
+                  },
             child: DateTime.now()
                         .difference(filteredInventory[index].date)
                         .inDays <
                     7
                 ? HorizontalNewItem(
+                    outOfStock: filteredInventory[index].inStock <= 0,
                     id: filteredInventory[index].id,
                     imageURL: filteredInventory[index].images,
                     name: filteredInventory[index].name,
@@ -242,6 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         filteredInventory[index].sellingPrice.toString(),
                   )
                 : HorizontalListItem(
+                    outOfStock: filteredInventory[index].inStock <= 0,
                     id: filteredInventory[index].id,
                     imageURL: filteredInventory[index].images,
                     name: filteredInventory[index].name,
@@ -256,12 +260,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget filtersApplied() {
+    final appState = Provider.of<AppState>(context);
     return Container(
         child: Row(
           children: <Widget>[
             text("Filters applied", 16, PRIMARY_COLOR, true),
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  appState.clearFilter();
+                },
                 icon: Icon(
                   FeatherIcons.x,
                   size: 16,
@@ -298,11 +305,11 @@ class _HomeScreenState extends State<HomeScreen> {
             inventories = inventoryList
                 .map((item) => InventoryItemModel.fromJson(item))
                 .toList();
-            if (sortType == 'Price (low to high)') {
+            if (appState.getsortType == 'Price (low to high)') {
               inventories
                   .sort((a, b) => a.sellingPrice.compareTo(b.sellingPrice));
             }
-            if (sortType == 'Price (high to low)') {
+            if (appState.getsortType == 'Price (high to low)') {
               inventories
                   .sort((a, b) => b.sellingPrice.compareTo(a.sellingPrice));
             }
@@ -313,11 +320,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     appState.rangeValue.end >= inventory.sellingPrice)
                 .toList();
 
-            if (sortType == 'Newest') {
+            if (appState.getsortType == 'Newest') {
               inventories.sort((a, b) => b.date.compareTo(a.date));
             }
           }
-          return _items(inventories);
+          return ListView(
+            physics: ScrollPhysics(),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    appState.getfilterApplied ? filtersApplied() : Container(),
+                    options()
+                  ],
+                ),
+              ),
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Divider(height: 10, thickness: 1)),
+              _items(inventories)
+            ],
+          );
         }
         return Container();
       },

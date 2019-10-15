@@ -6,8 +6,12 @@ import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/components/vendor_detail_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
+import 'package:elec_mart_customer/models/QuestionAnswerModel.dart';
+import 'package:elec_mart_customer/models/ReviewsModel.dart';
 import 'package:elec_mart_customer/screens/add_review.dart';
 import 'package:elec_mart_customer/screens/ask_questions.dart';
+import 'package:elec_mart_customer/screens/graphql/get_questionandanswer.dart';
+import 'package:elec_mart_customer/screens/nav_screens.dart';
 import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:elec_mart_customer/state/cart_state.dart';
@@ -22,23 +26,15 @@ import 'package:provider/provider.dart';
 import 'graphql/getReviews.dart';
 
 class ItemDetail extends StatefulWidget {
-  final String description, name, vendorName, vendorAddress, callNumber;
+  final String description, name;
   final InventoryItemModel inventory;
 
-  ItemDetail(
-      {this.description,
-      this.name,
-      this.vendorName,
-      this.vendorAddress,
-      this.callNumber,
-      this.inventory});
+  ItemDetail({this.description, this.name, this.inventory});
   @override
   _ItemDetailState createState() => _ItemDetailState();
 }
 
 class _ItemDetailState extends State<ItemDetail> {
-  double averageRating = 0;
-
   GlobalKey<ScaffoldState> scaffold_state = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -88,14 +84,10 @@ class _ItemDetailState extends State<ItemDetail> {
               SizedBox(height: 10),
               vendorDetails(),
               SizedBox(height: 10),
-              giveRating(),
-              SizedBox(height: 10),
-              avgRating(),
-              SizedBox(height: 10),
               getCustomerReviews(),
               SizedBox(height: 10),
               Divider(height: 10, thickness: 1),
-              questions(),
+              getCustomerQuestions(),
               SizedBox(height: 10),
               askQuestions(),
             ],
@@ -218,7 +210,10 @@ class _ItemDetailState extends State<ItemDetail> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AskQuestion()));
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AskQuestion(inventory: widget.inventory)));
       },
       child: Container(
         padding: EdgeInsets.all(24),
@@ -264,11 +259,11 @@ class _ItemDetailState extends State<ItemDetail> {
     );
   }
 
-  Widget comments(QueryResult result) {
+  Widget comments(List<ReviewsModel> reviews) {
     return ListView.separated(
         separatorBuilder: (context, i) => Container(height: 10),
         shrinkWrap: true,
-        itemCount: 2,
+        itemCount: reviews.length,
         physics: ScrollPhysics(),
         itemBuilder: (context, index) => Container(
               padding: EdgeInsets.all(24),
@@ -283,15 +278,10 @@ class _ItemDetailState extends State<ItemDetail> {
                         borderColor: PRIMARY_COLOR,
                         color: PRIMARY_COLOR,
                         size: 16.0,
-                        onratingChanged: (v) {
-                          setState(() {
-                            averageRating = v;
-                          });
-                        },
-                        rating: averageRating,
+                        rating: reviews[index].rating.toDouble(),
                       ),
                       SizedBox(width: 10),
-                      Text("${averageRating.toStringAsFixed(1)}/5",
+                      Text("${reviews[index].rating.toDouble()}/5",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -299,15 +289,14 @@ class _ItemDetailState extends State<ItemDetail> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Text(
-                      "Works very well, and looks even better. It’s been a few days since I purchased this and it works very well",
+                  Text("${reviews[index].text}",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )),
                   Align(
                     alignment: Alignment.bottomRight,
-                    child: Text("Sivaperumal K",
+                    child: Text("- ${reviews[index].user.name}",
                         style: TextStyle(
                           fontSize: 14,
                           color: PRIMARY_COLOR,
@@ -319,7 +308,7 @@ class _ItemDetailState extends State<ItemDetail> {
             ));
   }
 
-  Widget questions() {
+  Widget questions(List<QuestionAnswerModel> qa) {
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: Column(
@@ -329,34 +318,32 @@ class _ItemDetailState extends State<ItemDetail> {
           ListView.separated(
               separatorBuilder: (context, i) => Container(height: 10),
               shrinkWrap: true,
-              itemCount: 2,
+              itemCount: qa.length,
               physics: ScrollPhysics(),
-              itemBuilder: (context, index) => Container(
-                    padding: EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: PRIMARY_COLOR.withOpacity(0.13)),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Column(
-                      children: <Widget>[
-                        text(
-                            "What is the waterproof grading of this product, can I use tempered glass on it?",
-                            14,
-                            PRIMARY_COLOR,
-                            true),
-                        SizedBox(height: 10),
-                        Divider(height: 10, thickness: 1),
-                        text("It is IP68. And yes, you can use tempered glass.",
-                            14, BLACK_COLOR, true),
-                      ],
-                    ),
-                  )),
+              itemBuilder: (context, index) => qa[index].answer != null
+                  ? Container(
+                      padding: EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: PRIMARY_COLOR.withOpacity(0.13)),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Column(
+                        children: <Widget>[
+                          text(
+                              "${qa[index].question}", 14, PRIMARY_COLOR, true),
+                          SizedBox(height: 10),
+                          Divider(height: 10, thickness: 1),
+                          text("${qa[index].answer}", 14, BLACK_COLOR, true),
+                        ],
+                      ),
+                    )
+                  : Container()),
         ],
       ),
     );
   }
 
-  Widget avgRating() {
+  Widget avgRating(double v) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -371,20 +358,30 @@ class _ItemDetailState extends State<ItemDetail> {
               borderColor: PRIMARY_COLOR,
               color: PRIMARY_COLOR,
               size: 20.0,
-              onratingChanged: (v) {
-                setState(() {
-                  averageRating = v;
-                });
-              },
-              rating: averageRating,
+              rating: v,
             ),
-            Text("${averageRating.toStringAsFixed(1)}/5",
+            Text("${v.toStringAsFixed(1)}/5",
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: PRIMARY_COLOR)),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget ratingAndReviews(
+      bool canReview, List<ReviewsModel> reviews, double v) {
+    return ListView(
+      physics: ScrollPhysics(),
+      shrinkWrap: true,
+      children: <Widget>[
+        if (canReview) giveRating(),
+        SizedBox(height: 10),
+        avgRating(v),
+        SizedBox(height: 10),
+        comments(reviews),
       ],
     );
   }
@@ -429,22 +426,32 @@ class _ItemDetailState extends State<ItemDetail> {
                 icon: FeatherIcons.shoppingCart,
                 buttonText: "Buy now",
                 onPressed: () {
-                  // final snackBar =
-                  //     SnackBar(content: Text('This item added to the cart !'));
-                  // scaffold_state.currentState.showSnackBar(snackBar);
-                  // cartState.setCartItems({
-                  //   "name": widget.inventory.name,
-                  //   "imageUrl": widget.inventory.images,
-                  //   "itemId": widget.inventory.id,
-                  //   "price": widget.inventory.sellingPrice
-                  // });
+                  cartState.clearCart();
+                  cartState.setCartItems({
+                    "name": widget.inventory.name,
+                    "imageUrl": widget.inventory.images,
+                    "itemId": widget.inventory.id,
+                    "price": widget.inventory.sellingPrice
+                  });
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NavigateScreens(selectedIndex: 1)));
                 },
               ),
               TeritoryButton(
                 text: "Add to cart",
                 onpressed: () {
-                  final snackBar =
-                      SnackBar(content: Text('This item added to the cart !'));
+                  final snackBar = SnackBar(
+                    content: Text('This item added to the cart !'),
+                    action: SnackBarAction(
+                      label: "Ok",
+                      onPressed: () {
+                        scaffold_state.currentState.hideCurrentSnackBar();
+                      },
+                    ),
+                  );
                   scaffold_state.currentState.showSnackBar(snackBar);
                   cartState.setCartItems({
                     "name": widget.inventory.name,
@@ -465,25 +472,75 @@ class _ItemDetailState extends State<ItemDetail> {
     final appState = Provider.of<AppState>(context);
     var queryOptions = QueryOptions(
       document: getReviews,
+      variables: {
+        "inventoryId": widget.inventory.id,
+      },
       fetchPolicy: FetchPolicy.noCache,
       context: {
         'headers': <String, String>{
           'Authorization': 'Bearer ${appState.jwtToken}',
         },
       },
-      pollInterval: 1,
+      pollInterval: 2,
     );
     return Query(
       options: queryOptions,
       builder: (QueryResult result, {VoidCallback refetch}) {
-        print(result.errors);
-
         if (result.loading) return Center(child: CupertinoActivityIndicator());
         if (result.hasErrors)
           return Center(child: Text("Oops something went wrong"));
+        List<ReviewsModel> reviews;
 
-        if (result.data != null && result.data['getReviews'] != null) {
-          return comments(result.data);
+        List reviewList = result.data['getReviews']['reviews'];
+
+        reviews =
+            reviewList.map((item) => ReviewsModel.fromJson(item)).toList();
+
+        if (result.data != null &&
+            result.data['getReviews'] != null &&
+            result.data["getReviews"]["averageRating"] != null) {
+          return ratingAndReviews(
+              result.data["getReviews"]["canReview"],
+              reviews,
+              double.parse(
+                  result.data["getReviews"]["averageRating"].toString()));
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget getCustomerQuestions() {
+    final appState = Provider.of<AppState>(context);
+    var queryOptions = QueryOptions(
+      document: getQA,
+      variables: {
+        "inventoryId": widget.inventory.id,
+      },
+      fetchPolicy: FetchPolicy.noCache,
+      context: {
+        'headers': <String, String>{
+          'Authorization': 'Bearer ${appState.jwtToken}',
+        },
+      },
+      pollInterval: 2,
+    );
+    return Query(
+      options: queryOptions,
+      builder: (QueryResult result, {VoidCallback refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+        List<QuestionAnswerModel> qa;
+
+        List reviewList = result.data['getQA'];
+
+        qa = reviewList
+            .map((item) => QuestionAnswerModel.fromJson(item))
+            .toList();
+
+        if (result.data != null && result.data['getQA'] != null) {
+          return questions(qa);
         }
         return Container();
       },

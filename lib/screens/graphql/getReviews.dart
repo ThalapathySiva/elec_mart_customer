@@ -1,7 +1,10 @@
-const String getReviews = """query getReviews{
-  getReviews{
+const String getReviews = """query getReviews(\$inventoryId:String){
+  getReviews(inventoryId:\$inventoryId){
    averageRating,
+   canReview,
     reviews{
+      id,
+      rating,
       text,
       customer{
         name

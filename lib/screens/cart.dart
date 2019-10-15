@@ -118,7 +118,7 @@ class _CartState extends State<Cart> {
       children: <Widget>[
         Column(
           children: <Widget>[
-            SizedBox(height: 120),
+            SizedBox(height: 50),
             Image.asset("assets/images/cactus.png", height: 256, width: 256),
             text("Your cart is empty!", 30, PRIMARY_COLOR.withOpacity(0.3),
                 false),
@@ -293,7 +293,8 @@ class _CartState extends State<Cart> {
         return result.loading
             ? Center(child: CupertinoActivityIndicator())
             : PrimaryButtonWidget(
-                buttonText: "Proceed to Payment",
+                buttonText:
+                    isTickCOD ? "Proceed to Order" : "Proceed to Payment",
                 onPressed: () {
                   runMutation({
                     "paymentMode":

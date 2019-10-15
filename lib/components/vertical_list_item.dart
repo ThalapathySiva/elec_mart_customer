@@ -1,4 +1,5 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
@@ -6,11 +7,13 @@ class VerticalListItem extends StatelessWidget {
   final String name, currentPrice, mrpPrice;
   final bool showBorder;
   final List imageURL;
+  final bool outOfStock;
   final String id;
 
   VerticalListItem(
       {this.id,
       this.name,
+      this.outOfStock = false,
       this.currentPrice,
       this.mrpPrice,
       this.imageURL,
@@ -44,6 +47,8 @@ class VerticalListItem extends StatelessWidget {
           ),
           priceWidget(mrpPrice),
           priceWidget(currentPrice, currentPrice: true),
+          SizedBox(height: 10),
+          if (outOfStock) text("OUT OF STOCK", 11, RED_COLOR, true),
         ],
       ),
     );

@@ -7,6 +7,8 @@ class AppState extends ChangeNotifier {
   String phno = "";
   RangeValues rangeValues = RangeValues(0, 100000);
   String searchText = "";
+  String sortType;
+  bool filterApplied = false;
   AppState() {
     getToken();
   }
@@ -23,6 +25,12 @@ class AppState extends ChangeNotifier {
 
   void setToken(String val) {
     userJwtToken = val;
+    notifyListeners();
+  }
+
+  void setSortType(String type) {
+    sortType = type;
+    filterApplied = true;
     notifyListeners();
   }
 
@@ -44,13 +52,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearFilter() {
+    searchText = "";
+    sortType = "Price (low to high)";
+    rangeValues = RangeValues(0, 100000);
+    filterApplied = false;
+    notifyListeners();
+  }
+
   void setsearchText(String text) {
     searchText = text;
+    filterApplied = true;
     notifyListeners();
   }
 
   void setRangeValues(RangeValues r) {
     rangeValues = r;
+    filterApplied = true;
     notifyListeners();
   }
 
@@ -63,4 +81,8 @@ class AppState extends ChangeNotifier {
   String get name => userName;
 
   String get getSearchText => searchText;
+
+  String get getsortType => sortType;
+
+  bool get getfilterApplied => filterApplied;
 }
