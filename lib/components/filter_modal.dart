@@ -28,7 +28,8 @@ class _FilterModalState extends State<FilterModal>
     with SingleTickerProviderStateMixin {
   RangeValues rangeValues = RangeValues(0, 100000);
   bool isExpanded = false;
-  List<dynamic> categories = ["All"];
+  List<String> categories = ["All"];
+  List<String> categoryImages = [""];
 
   bool isFilter = false;
   AnimationController animationController;
@@ -250,25 +251,35 @@ class _FilterModalState extends State<FilterModal>
                 .map((item) => InventoryItemModel.fromJson(item))
                 .toList();
 
-            categories =
-                inventories.map((item) => item.category).toSet().toList();
+            // categories =
+            //     inventories.map((item) => item.category).toSet().toList();
+
+            inventories.forEach((item) {
+              if (!categories.contains(item.category)) {
+                categories.add(item.category);
+                categoryImages.add(item.images[0]);
+              }
+            });
           }
-          return categoryColumn(["All", ...categories]);
+          return categoryColumn([...categories], [...categoryImages]);
         }
         return Container();
       },
     );
   }
 
-  Widget categoryColumn(List<dynamic> categories) {
+  Widget categoryColumn(List<String> categories, List<String> categoryImages) {
     return Container(
       width: 150,
       margin: EdgeInsets.only(top: 45),
-      child: ListView.builder(
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 10),
         itemCount: categories.length,
         itemBuilder: (context, index) => InkWell(
             onTap: () => widget.onCategoryChange(categories[index]),
             child: Category(
+                categoryImage: categoryImages[index],
                 name: categories[index],
                 selected: widget.selectedCategory == categories[index])),
       ),

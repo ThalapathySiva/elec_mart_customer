@@ -3,10 +3,10 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatelessWidget {
-  final String name;
+  final String name, categoryImage;
   final bool selected;
 
-  Category({this.selected = false, this.name});
+  Category({this.selected = false, this.name, this.categoryImage});
   @override
   Widget build(BuildContext context) {
     return layout();
@@ -16,18 +16,30 @@ class Category extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 10),
         height: 56,
-        width: 375,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        width: 75,
+        child: Column(
           children: <Widget>[
-            Text("$name",
-                style: TextStyle(
-                    color: PRIMARY_COLOR,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            selected
-                ? Icon(FeatherIcons.checkCircle, color: PRIMARY_COLOR)
-                : Container()
+            ClipOval(
+              child: Image.network(
+                categoryImage,
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("$name",
+                    style: TextStyle(
+                        color: PRIMARY_COLOR,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold)),
+                selected
+                    ? Icon(FeatherIcons.checkCircle, color: PRIMARY_COLOR)
+                    : Container()
+              ],
+            ),
           ],
         ));
   }

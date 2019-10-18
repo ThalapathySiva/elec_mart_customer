@@ -39,6 +39,8 @@ class InventoryItemModel {
         ),
         images: jsonDecode(json['imageUrl']),
         inStock: json['inStock'].toDouble(),
-        vendor: VendorModel?.fromJson(json['vendor']));
+        vendor: json['vendor'] == null
+            ? null
+            : VendorModel?.fromJson(json['vendor']));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:elec_mart_customer/components/filter_modal.dart';
 import 'package:elec_mart_customer/components/horizontal_list_item.dart';
 import 'package:elec_mart_customer/components/horizontal_new_item.dart';
@@ -5,12 +6,16 @@ import 'package:elec_mart_customer/components/vertical_list_item.dart';
 import 'package:elec_mart_customer/components/vertical_new_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
+import 'package:elec_mart_customer/models/OfferModel.dart';
+import 'package:elec_mart_customer/screens/graphql/get_posters.dart';
 import 'package:elec_mart_customer/screens/item_detail.dart';
+import 'package:elec_mart_customer/screens/offer_screen.dart';
 import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -38,13 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _layout() {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       child: Stack(children: <Widget>[
-        Positioned(
-            top: 50,
-            child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: getInventoryQuery())),
+        Positioned(top: 50, child: getInventoryQuery()),
         Positioned(
             top: 0,
             child: FilterModal(
@@ -131,34 +132,31 @@ class _HomeScreenState extends State<HomeScreen> {
             (item.category == selectedCategory || selectedCategory == "All"))
         .toList();
 
-    return Container(
-        height: height - 150,
-        width: width,
-        child: GridView.builder(
-          itemCount: filteredInventory.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.75,
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 10,
-          ),
-          itemBuilder: (context, index) {
-            return Center(
-              child: InkWell(
-                  onTap: filteredInventory[index].inStock <= 0
-                      ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ItemDetail(
-                                    inventory: filteredInventory[index])),
-                          );
-                        },
-                  child: DateTime.now()
-                              .difference(inventories[index].date)
-                              .inDays <
-                          7
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      itemCount: filteredInventory.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 0,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: (context, index) {
+        return Center(
+          child: InkWell(
+              onTap: filteredInventory[index].inStock <= 0
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ItemDetail(
+                                inventory: filteredInventory[index])),
+                      );
+                    },
+              child:
+                  DateTime.now().difference(inventories[index].date).inDays < 7
                       ? VerticalNewItem(
                           outOfStock: filteredInventory[index].inStock <= 0,
                           id: filteredInventory[index].id,
@@ -179,9 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           currentPrice:
                               filteredInventory[index].sellingPrice.toString(),
                         )),
-            );
-          },
-        ));
+        );
+      },
+    );
   }
 
   Widget listView(List<InventoryItemModel> inventories) {
@@ -212,50 +210,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 .contains(appState.getSearchText.toLowerCase()) &&
             (item.category == selectedCategory || selectedCategory == "All"))
         .toList();
-    return SizedBox(
-      height: height - 190,
-      width: width,
-      child: ListView.separated(
-        separatorBuilder: (BuildContext context, int index) =>
-            SizedBox(height: 10),
-        padding: EdgeInsets.all(8.0),
-        itemCount: filteredInventory.length,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: filteredInventory[index].inStock <= 0
-                ? null
-                : () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ItemDetail(
-                                inventory: filteredInventory[index])));
-                  },
-            child: DateTime.now()
-                        .difference(filteredInventory[index].date)
-                        .inDays <
-                    7
-                ? HorizontalNewItem(
-                    outOfStock: filteredInventory[index].inStock <= 0,
-                    id: filteredInventory[index].id,
-                    imageURL: filteredInventory[index].images,
-                    name: filteredInventory[index].name,
-                    mrpPrice: filteredInventory[index].originalPrice.toString(),
-                    currentPrice:
-                        filteredInventory[index].sellingPrice.toString(),
-                  )
-                : HorizontalListItem(
-                    outOfStock: filteredInventory[index].inStock <= 0,
-                    id: filteredInventory[index].id,
-                    imageURL: filteredInventory[index].images,
-                    name: filteredInventory[index].name,
-                    mrpPrice: filteredInventory[index].originalPrice.toString(),
-                    currentPrice:
-                        filteredInventory[index].sellingPrice.toString(),
-                  ),
-          );
-        },
-      ),
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      separatorBuilder: (BuildContext context, int index) =>
+          SizedBox(height: 10),
+      padding: EdgeInsets.all(8.0),
+      itemCount: filteredInventory.length,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: filteredInventory[index].inStock <= 0
+              ? null
+              : () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ItemDetail(inventory: filteredInventory[index])));
+                },
+          child: DateTime.now()
+                      .difference(filteredInventory[index].date)
+                      .inDays <
+                  7
+              ? HorizontalNewItem(
+                  outOfStock: filteredInventory[index].inStock <= 0,
+                  id: filteredInventory[index].id,
+                  imageURL: filteredInventory[index].images,
+                  name: filteredInventory[index].name,
+                  mrpPrice: filteredInventory[index].originalPrice.toString(),
+                  currentPrice:
+                      filteredInventory[index].sellingPrice.toString(),
+                )
+              : HorizontalListItem(
+                  outOfStock: filteredInventory[index].inStock <= 0,
+                  id: filteredInventory[index].id,
+                  imageURL: filteredInventory[index].images,
+                  name: filteredInventory[index].name,
+                  mrpPrice: filteredInventory[index].originalPrice.toString(),
+                  currentPrice:
+                      filteredInventory[index].sellingPrice.toString(),
+                ),
+        );
+      },
     );
   }
 
@@ -324,24 +320,88 @@ class _HomeScreenState extends State<HomeScreen> {
               inventories.sort((a, b) => b.date.compareTo(a.date));
             }
           }
-          return ListView(
-            physics: ScrollPhysics(),
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    appState.getfilterApplied ? filtersApplied() : Container(),
-                    options()
-                  ],
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(bottom: 120),
+            child: ListView(
+              physics: ScrollPhysics(),
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      appState.getfilterApplied
+                          ? filtersApplied()
+                          : Container(),
+                      options()
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Divider(height: 10, thickness: 1)),
-              _items(inventories)
-            ],
+                Container(
+                  margin: EdgeInsets.all(16),
+                  height: 150,
+                  child: getPostersQuery(),
+                ),
+                Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Divider(height: 10, thickness: 1)),
+                _items(inventories)
+              ],
+            ),
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget getPostersQuery() {
+    final appState = Provider.of<AppState>(context);
+    return Query(
+      options: QueryOptions(
+        document: posters,
+        pollInterval: 10,
+        fetchPolicy: FetchPolicy.noCache,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (result, {refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+
+        if (result.data != null && result.data["getPosters"] != null) {
+          final List poster = result.data["getPosters"];
+          final posters = poster.map((f) => OfferModel.fromJson(f)).toList();
+          return Carousel(
+            onImageTap: (index) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => OfferScreen(
+                            inventories: posters[index].inventories,
+                            vendor: posters[index].vendorModel,
+                            image: posters[index].image,
+                          )));
+            },
+            images: posters
+                .map((f) => Image.network(
+                      f.image,
+                      fit: BoxFit.fitWidth,
+                    ))
+                .toList(),
+            dotSize: 4.0,
+            dotSpacing: 15.0,
+            dotColor: Colors.lightGreenAccent,
+            indicatorBgPadding: 5.0,
+            borderRadius: true,
+            moveIndicatorFromBottom: 180.0,
+            noRadiusForIndicator: true,
           );
         }
         return Container();

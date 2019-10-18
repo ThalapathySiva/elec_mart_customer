@@ -8,6 +8,7 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/models/QuestionAnswerModel.dart';
 import 'package:elec_mart_customer/models/ReviewsModel.dart';
+import 'package:elec_mart_customer/models/VendorModel.dart';
 import 'package:elec_mart_customer/screens/add_review.dart';
 import 'package:elec_mart_customer/screens/ask_questions.dart';
 import 'package:elec_mart_customer/screens/graphql/get_questionandanswer.dart';
@@ -28,8 +29,9 @@ import 'graphql/getReviews.dart';
 class ItemDetail extends StatefulWidget {
   final String description, name;
   final InventoryItemModel inventory;
+  final VendorModel vendor;
 
-  ItemDetail({this.description, this.name, this.inventory});
+  ItemDetail({this.description, this.name, this.inventory, this.vendor});
   @override
   _ItemDetailState createState() => _ItemDetailState();
 }
@@ -130,11 +132,19 @@ class _ItemDetailState extends State<ItemDetail> {
           ),
           SizedBox(height: 10),
           VendorDetail(
-            storeImage: widget.inventory.vendor.shopPhotoUrl,
-            name: widget.inventory.vendor.storeName,
-            address: widget.inventory.vendor.address['addressLine'] +
-                "\n" +
-                widget.inventory.vendor.address['city'],
+            storeImage: widget.vendor != null
+                ? widget.vendor.shopPhotoUrl
+                : widget.inventory.vendor.shopPhotoUrl,
+            name: widget.vendor != null
+                ? widget.vendor.storeName
+                : widget.inventory.vendor.storeName,
+            address: widget.vendor != null
+                ? widget.vendor.address['addressLine'] +
+                    "\n" +
+                    widget.vendor.address['city']
+                : widget.inventory.vendor.address['addressLine'] +
+                    "\n" +
+                    widget.inventory.vendor.address['city'],
           ),
           Divider(height: 10, thickness: 1),
           SizedBox(height: 10),
@@ -309,6 +319,7 @@ class _ItemDetailState extends State<ItemDetail> {
   }
 
   Widget questions(List<QuestionAnswerModel> qa) {
+    final filter = qa.where((item) => item.answer != null).toList();
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: Column(
@@ -318,26 +329,24 @@ class _ItemDetailState extends State<ItemDetail> {
           ListView.separated(
               separatorBuilder: (context, i) => Container(height: 10),
               shrinkWrap: true,
-              itemCount: qa.length,
+              itemCount: filter.length,
               physics: ScrollPhysics(),
-              itemBuilder: (context, index) => qa[index].answer != null
-                  ? Container(
-                      padding: EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: PRIMARY_COLOR.withOpacity(0.13)),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Column(
-                        children: <Widget>[
-                          text(
-                              "${qa[index].question}", 14, PRIMARY_COLOR, true),
-                          SizedBox(height: 10),
-                          Divider(height: 10, thickness: 1),
-                          text("${qa[index].answer}", 14, BLACK_COLOR, true),
-                        ],
-                      ),
-                    )
-                  : Container()),
+              itemBuilder: (context, index) => Container(
+                    padding: EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                        border:
+                            Border.all(color: PRIMARY_COLOR.withOpacity(0.13)),
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: <Widget>[
+                        text("${filter[index].question}", 14, PRIMARY_COLOR,
+                            true),
+                        SizedBox(height: 10),
+                        Divider(height: 10, thickness: 1),
+                        text("${filter[index].answer}", 14, BLACK_COLOR, true),
+                      ],
+                    ),
+                  )),
         ],
       ),
     );
