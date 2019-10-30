@@ -15,6 +15,7 @@ class OrderModel {
   final DateTime updatedDate;
   final String paymentMode;
   final VendorModel vendor;
+  final double totalPrice;
   final int pinCode;
   final bool transactionSuccess;
 
@@ -22,6 +23,7 @@ class OrderModel {
       {this.pinCode,
       this.paymentMode,
       this.id,
+      this.totalPrice,
       this.orderNo,
       this.address,
       this.cartItems,
@@ -37,9 +39,8 @@ class OrderModel {
         id: json['id'],
         orderNo: json['orderNo'],
         address: AddressModel.fromJson(jsonDecode(json['address'])),
-        cartItems: cartItems
-            .map((item) => CartItemModel.fromJson(item['inventory']))
-            .toList(),
+        cartItems:
+            cartItems.map((item) => CartItemModel.fromJson(item)).toList(),
         status: json['status'],
         datePlaced: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['datePlaced']) * 1000,
@@ -47,18 +48,11 @@ class OrderModel {
         updatedDate: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['updatedDate']) * 1000,
         ),
+        totalPrice: json["totalPrice"].toDouble(),
         paymentMode: json["paymentMode"],
         transactionSuccess: json['transactionSuccess'],
         vendor: json["vendor"] != null
             ? VendorModel.fromJson(json['vendor'])
             : VendorModel());
-  }
-
-  double getTotalPrice() {
-    double price = 0;
-    cartItems.forEach((item) {
-      price += item.price;
-    });
-    return price;
   }
 }

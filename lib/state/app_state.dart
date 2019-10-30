@@ -7,6 +7,7 @@ class AppState extends ChangeNotifier {
   String phno = "";
   RangeValues rangeValues = RangeValues(0, 100000);
   String searchText = "";
+  bool isExpanded = false;
   String sortType;
   bool filterApplied = false;
   AppState() {
@@ -31,6 +32,11 @@ class AppState extends ChangeNotifier {
   void setSortType(String type) {
     sortType = type;
     filterApplied = true;
+    notifyListeners();
+  }
+
+  void setIsExpanded(bool isExpanded) {
+    isExpanded = isExpanded;
     notifyListeners();
   }
 
@@ -83,6 +89,8 @@ class AppState extends ChangeNotifier {
   String get getSearchText => searchText;
 
   String get getsortType => sortType;
+
+  bool get getIsExpanded => isExpanded;
 
   bool get getfilterApplied => filterApplied;
 }

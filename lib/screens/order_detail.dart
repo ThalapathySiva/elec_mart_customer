@@ -77,7 +77,7 @@ class _OrderDetailState extends State<OrderDetail> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           text("Order ID: BS${widget.order.orderNo}", 16, BLACK_COLOR, true),
-          text("Rs. ${widget.order.getTotalPrice()}", 24, PRIMARY_COLOR, true),
+          text("Rs. ${widget.order.totalPrice}", 24, PRIMARY_COLOR, true),
         ],
       ),
     );
@@ -144,16 +144,18 @@ class _OrderDetailState extends State<OrderDetail> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ItemDetail(
-                          inventory: widget.order.cartItems[index],
+                          inventory: widget.order.cartItems[index].inventory,
                           description:
                               widget.order.cartItems[index].description,
                           name: widget.order.cartItems[index].name,
                         )));
           },
           child: CartItem(
-            imageUrl: "${widget.order.cartItems[index].imageURL[0]}",
-            name: "${widget.order.cartItems[index].name}",
-            currentPrice: "Rs. ${widget.order.cartItems[index].price}",
+            itemStatus: "${widget.order.cartItems[index].itemStatus}",
+            imageUrl: "${widget.order.cartItems[index].inventory.images[0]}",
+            name: "${widget.order.cartItems[index].inventory.name}",
+            currentPrice:
+                "Rs. ${widget.order.cartItems[index].inventory.sellingPrice}",
           ),
         );
       },

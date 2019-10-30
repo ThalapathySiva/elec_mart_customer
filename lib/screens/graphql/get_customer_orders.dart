@@ -11,6 +11,7 @@ query GetCustomerOrders{
         address
       }
       cartItems{
+        itemStatus,
         inventory{
       id,
       name,

@@ -274,7 +274,10 @@ class _FilterModalState extends State<FilterModal>
       margin: EdgeInsets.only(top: 45),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, crossAxisSpacing: 10),
+          childAspectRatio: 1.8,
+          crossAxisCount: 2,
+          crossAxisSpacing: 1,
+        ),
         itemCount: categories.length,
         itemBuilder: (context, index) => InkWell(
             onTap: () => widget.onCategoryChange(categories[index]),

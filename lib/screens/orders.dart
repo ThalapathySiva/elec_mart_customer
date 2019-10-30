@@ -134,8 +134,8 @@ class _OrdersState extends State<Orders> {
                 children: <Widget>[
                   text("Order ID: BS${orders[index].orderNo}", 16, BLACK_COLOR,
                       true),
-                  text("Rs. ${orders[index].getTotalPrice()}", 16,
-                      PRIMARY_COLOR, true)
+                  text("Rs. ${orders[index].totalPrice}", 16, PRIMARY_COLOR,
+                      true)
                 ],
               ),
               SizedBox(height: 5),
@@ -211,8 +211,8 @@ class _OrdersState extends State<Orders> {
                     children: <Widget>[
                       text("Order ID: BS${orders[index].orderNo}", 16,
                           BLACK_COLOR, true),
-                      text("Rs. ${orders[index].getTotalPrice()}", 16,
-                          PRIMARY_COLOR, true)
+                      text("Rs. ${orders[index].totalPrice}", 16, PRIMARY_COLOR,
+                          true)
                     ],
                   ),
                   SizedBox(height: 5),

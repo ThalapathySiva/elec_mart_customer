@@ -339,11 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.all(16),
-                  height: 150,
-                  child: getPostersQuery(),
-                ),
+                getPostersQuery(),
                 Container(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Divider(height: 10, thickness: 1)),
@@ -375,33 +371,39 @@ class _HomeScreenState extends State<HomeScreen> {
         if (result.hasErrors)
           return Center(child: Text("Oops something went wrong"));
 
-        if (result.data != null && result.data["getPosters"] != null) {
+        if (result.data != null &&
+            result.data["getPosters"] != null &&
+            result.data["getPosters"].length != 0) {
           final List poster = result.data["getPosters"];
           final posters = poster.map((f) => OfferModel.fromJson(f)).toList();
-          return Carousel(
-            onImageTap: (index) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => OfferScreen(
-                            inventories: posters[index].inventories,
-                            vendor: posters[index].vendorModel,
-                            image: posters[index].image,
-                          )));
-            },
-            images: posters
-                .map((f) => Image.network(
-                      f.image,
-                      fit: BoxFit.fitWidth,
-                    ))
-                .toList(),
-            dotSize: 4.0,
-            dotSpacing: 15.0,
-            dotColor: Colors.lightGreenAccent,
-            indicatorBgPadding: 5.0,
-            borderRadius: true,
-            moveIndicatorFromBottom: 180.0,
-            noRadiusForIndicator: true,
+          return Container(
+            margin: EdgeInsets.all(16),
+            height: 150,
+            child: Carousel(
+              onImageTap: (index) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OfferScreen(
+                              inventories: posters[index].inventories,
+                              vendor: posters[index].vendorModel,
+                              image: posters[index].image,
+                            )));
+              },
+              images: posters
+                  .map((f) => Image.network(
+                        f.image,
+                        fit: BoxFit.fitWidth,
+                      ))
+                  .toList(),
+              dotSize: 4.0,
+              dotSpacing: 15.0,
+              dotColor: Colors.lightGreenAccent,
+              indicatorBgPadding: 5.0,
+              borderRadius: true,
+              moveIndicatorFromBottom: 180.0,
+              noRadiusForIndicator: true,
+            ),
           );
         }
         return Container();

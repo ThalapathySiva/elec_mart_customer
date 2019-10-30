@@ -105,6 +105,17 @@ class _ItemDetailState extends State<ItemDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          widget.inventory.inStock.floor() < 5
+              ? Text(
+                  "Only ${widget.inventory.inStock.floor()} in stock...",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: RED_COLOR),
+                  textAlign: TextAlign.start,
+                )
+              : Container(),
+          SizedBox(height: 10),
           Text(
             "Item Description",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

@@ -10,7 +10,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'about_app.dart';
 import 'change_number.dart';
 import 'edit_address.dart';
@@ -85,6 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               await prefs.clear();
               appState.clearApp();
               cartState.clearCart();
+              Fluttertoast.showToast(
+                  msg: "You've successfully logged out",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIos: 1,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Login()));
             },

@@ -4,9 +4,12 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'order_status_component.dart';
+
 class CartItem extends StatelessWidget {
   final String name, currentPrice;
   final bool canDelete;
+  final String itemStatus;
   final String imageUrl;
   final String id;
 
@@ -14,6 +17,7 @@ class CartItem extends StatelessWidget {
       {this.id,
       this.imageUrl,
       this.name,
+      this.itemStatus,
       this.currentPrice,
       this.canDelete = false});
 
@@ -60,6 +64,10 @@ class CartItem extends StatelessWidget {
                         color: PRIMARY_COLOR,
                       ),
                     ),
+                  ),
+                if (itemStatus != null)
+                  OrderStatusIndicatorWidget(
+                    orderStatus: "$itemStatus",
                   ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,7 +21,10 @@ class _OTPScreenState extends State<OTPScreen> {
   String phoneNo;
   String smsOTP;
   String verificationId;
+  bool isVerifyButtonClicked = false;
+
   String errorMessage = null;
+  
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   signIn() async {
@@ -88,6 +92,9 @@ class _OTPScreenState extends State<OTPScreen> {
     print(e.toString());
     print('ERROR CODE : ' + e.code);
     if (e.code == 'ERROR_INVALID_VERIFICATION_CODE') {
+      setState(() {
+        isVerifyButtonClicked = false;
+      });
       errorMessage = 'Invalid OTP';
       widget.onOTPIncorrect();
     }
@@ -128,27 +135,38 @@ class _OTPScreenState extends State<OTPScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              PrimaryButtonWidget(
-                buttonText: "Verify",
-                onPressed: () async {
-                  try {
-                    final AuthCredential credential =
-                        PhoneAuthProvider.getCredential(
-                            verificationId: verificationId, smsCode: smsOTP);
-                    print("RECEIVED CREDENTIAL : " + credential.toString());
-                    await firebaseAuth.signInWithCredential(credential).then(
-                        (authResult) {
-                      //OTP verification success
-                      print("OTP VERIFICATION SUCCESS");
-                      widget.onOTPSuccess();
-                    }, onError: (error) {
-                      handleError(error);
-                    });
-                  } catch (e) {
-                    handleError(e);
-                  }
-                },
-              )
+              isVerifyButtonClicked
+                  ? Container(
+                      margin: EdgeInsets.only(right: 32),
+                      child: CupertinoActivityIndicator(),
+                    )
+                  : PrimaryButtonWidget(
+                      buttonText: "Verify",
+                      onPressed: () async {
+                        setState(() {
+                          isVerifyButtonClicked = true;
+                        });
+                        try {
+                          final AuthCredential credential =
+                              PhoneAuthProvider.getCredential(
+                                  verificationId: verificationId,
+                                  smsCode: smsOTP);
+                          print(
+                              "RECEIVED CREDENTIAL : " + credential.toString());
+                          await firebaseAuth
+                              .signInWithCredential(credential)
+                              .then((authResult) {
+                            //OTP verification success
+                            print("OTP VERIFICATION SUCCESS");
+                            widget.onOTPSuccess();
+                          }, onError: (error) {
+                            handleError(error);
+                          });
+                        } catch (e) {
+                          handleError(e);
+                        }
+                      },
+                    )
             ],
           )
         ],

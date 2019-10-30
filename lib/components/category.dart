@@ -1,5 +1,4 @@
 import 'package:elec_mart_customer/constants/Colors.dart';
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatelessWidget {
@@ -14,33 +13,50 @@ class Category extends StatelessWidget {
 
   Widget layout() {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        height: 56,
-        width: 75,
-        child: Column(
-          children: <Widget>[
-            ClipOval(
-              child: Image.network(
-                categoryImage,
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text("$name",
-                    style: TextStyle(
-                        color: PRIMARY_COLOR,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)),
-                selected
-                    ? Icon(FeatherIcons.checkCircle, color: PRIMARY_COLOR)
-                    : Container()
-              ],
-            ),
-          ],
-        ));
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          selected
+              ? Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 3, color: PRIMARY_COLOR),
+                      borderRadius: BorderRadius.circular(30)),
+                  child: ClipOval(
+                    child: name == "All"
+                        ? Icon(
+                            Icons.all_inclusive,
+                            color: BLACK_COLOR,
+                            size: 50,
+                          )
+                        : Image.network(
+                            categoryImage,
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                )
+              : ClipOval(
+                  child: name == "All"
+                      ? Icon(
+                          Icons.all_inclusive,
+                          color: BLACK_COLOR,
+                          size: 50,
+                        )
+                      : Image.network(
+                          categoryImage,
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
+                        )),
+          Text("$name",
+              style: TextStyle(
+                  color:
+                      selected ? PRIMARY_COLOR : GREY_COLOR.withOpacity(0.3),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold))
+        ],
+      ),
+    );
   }
 }
