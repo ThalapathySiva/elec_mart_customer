@@ -28,16 +28,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isGrid = true;
-  int selectedIndex = 0;
-  List<dynamic> categories = ["All"];
-  String query = "";
   String selectedCategory = "All";
-  String name = "";
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _layout(),
-    );
+    return Scaffold(body: _layout());
   }
 
   Widget _layout() {
@@ -47,15 +42,16 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(children: <Widget>[
         Positioned(top: 50, child: getInventoryQuery()),
         Positioned(
-            top: 0,
-            child: FilterModal(
-              selectedCategory: selectedCategory,
-              onCategoryChange: (val) {
-                setState(() {
-                  selectedCategory = val;
-                });
-              },
-            )),
+          top: 0,
+          child: FilterModal(
+            selectedCategory: selectedCategory,
+            onCategoryChange: (val) {
+              setState(() {
+                selectedCategory = val;
+              });
+            },
+          ),
+        ),
       ]),
     );
   }
@@ -145,38 +141,37 @@ class _HomeScreenState extends State<HomeScreen> {
       itemBuilder: (context, index) {
         return Center(
           child: InkWell(
-              onTap: filteredInventory[index].inStock <= 0
-                  ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ItemDetail(
-                                inventory: filteredInventory[index])),
-                      );
-                    },
-              child:
-                  DateTime.now().difference(inventories[index].date).inDays < 7
-                      ? VerticalNewItem(
-                          outOfStock: filteredInventory[index].inStock <= 0,
-                          id: filteredInventory[index].id,
-                          imageURL: filteredInventory[index].images,
-                          name: filteredInventory[index].name,
-                          mrpPrice:
-                              filteredInventory[index].originalPrice.toString(),
-                          currentPrice:
-                              filteredInventory[index].sellingPrice.toString(),
-                        )
-                      : VerticalListItem(
-                          outOfStock: filteredInventory[index].inStock <= 0,
-                          id: filteredInventory[index].id,
-                          imageURL: filteredInventory[index].images,
-                          name: filteredInventory[index].name,
-                          mrpPrice:
-                              filteredInventory[index].originalPrice.toString(),
-                          currentPrice:
-                              filteredInventory[index].sellingPrice.toString(),
-                        )),
+            onTap: filteredInventory[index].inStock <= 0
+                ? null
+                : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ItemDetail(inventory: filteredInventory[index]),
+                      ),
+                    );
+                  },
+            child: DateTime.now().difference(inventories[index].date).inDays < 7
+                ? VerticalNewItem(
+                    outOfStock: filteredInventory[index].inStock <= 0,
+                    id: filteredInventory[index].id,
+                    imageURL: filteredInventory[index].images,
+                    name: filteredInventory[index].name,
+                    mrpPrice: filteredInventory[index].originalPrice.toString(),
+                    currentPrice:
+                        filteredInventory[index].sellingPrice.toString(),
+                  )
+                : VerticalListItem(
+                    outOfStock: filteredInventory[index].inStock <= 0,
+                    id: filteredInventory[index].id,
+                    imageURL: filteredInventory[index].images,
+                    name: filteredInventory[index].name,
+                    mrpPrice: filteredInventory[index].originalPrice.toString(),
+                    currentPrice:
+                        filteredInventory[index].sellingPrice.toString(),
+                  ),
+          ),
         );
       },
     );

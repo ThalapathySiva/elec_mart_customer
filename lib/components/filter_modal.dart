@@ -1,8 +1,6 @@
 import 'package:elec_mart_customer/components/app_bar.dart';
 import 'package:elec_mart_customer/components/category.dart';
 import 'package:elec_mart_customer/components/drop_down_widget.dart';
-import 'package:elec_mart_customer/components/primary_button.dart';
-import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
@@ -26,17 +24,16 @@ class FilterModal extends StatefulWidget {
 
 class _FilterModalState extends State<FilterModal>
     with SingleTickerProviderStateMixin {
-  RangeValues rangeValues = RangeValues(0, 100000);
   bool isExpanded = false;
+  bool isFilter = false;
+
   List<String> categories = ["All"];
   List<String> categoryImages = [""];
 
-  bool isFilter = false;
   AnimationController animationController;
   Animation<Offset> animationOffset;
 
-  String currentSortType = "Price (low to high)";
-  String searchText = "";
+  final searchTextController = TextEditingController();
 
   @override
   void initState() {
@@ -58,7 +55,7 @@ class _FilterModalState extends State<FilterModal>
             position: animationOffset,
             child: Container(
               color: WHITE_COLOR,
-              height: 300,
+              height: 260,
               width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.all(10),
               child: isFilter ? filterColumn() : getInventoryQuery(),
@@ -103,28 +100,29 @@ class _FilterModalState extends State<FilterModal>
     return Column(
       children: <Widget>[
         Container(margin: EdgeInsets.only(top: 65)),
-        filterOperations(),
+        searchField(),
         rangeSliders(),
         SizedBox(height: 5),
         sortBy(),
-        SizedBox(height: 10),
-        buttonRow(),
       ],
     );
   }
 
-  Widget filterOperations() {
+  Widget searchField() {
+    final appState = Provider.of<AppState>(context);
+    if (appState.getSearchText == "") searchTextController.clear();
     return CustomTextField(
+      controller: searchTextController,
       labelText: "Search for items",
       onChanged: (val) {
-        setState(() {
-          searchText = val;
-        });
+        appState.setsearchText(val);
       },
     );
   }
 
   Widget rangeSliders() {
+    final appState = Provider.of<AppState>(context);
+
     return Container(
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -138,23 +136,21 @@ class _FilterModalState extends State<FilterModal>
               ),
               Expanded(
                 child: RangeSlider(
-                  values: rangeValues,
+                  values: appState.rangeValue,
                   min: 0,
                   max: 100000,
                   divisions: 10,
                   activeColor: PRIMARY_COLOR,
                   inactiveColor: LIGHT_BLUE_COLOR,
                   onChanged: (RangeValues val) {
-                    setState(() {
-                      rangeValues = val;
-                    });
+                    appState.setRangeValues(val);
                   },
                 ),
               ),
             ],
           ),
           Text(
-            "₹ ${rangeValues.start}- ₹ ${rangeValues.end}",
+            "₹ ${appState.rangeValue.start}- ₹ ${appState.rangeValue.end}",
             style: TextStyle(fontWeight: FontWeight.bold),
             textAlign: TextAlign.end,
           ),
@@ -178,51 +174,12 @@ class _FilterModalState extends State<FilterModal>
             hint: "Price (low to high)",
             itemList: ["Price (low to high)", "Price (high to low)", "Newest"],
             onChanged: (val) {
-              setState(() {
-                currentSortType = val;
-              });
+              appState.setSortType(val);
             },
             itemValue: appState.getsortType,
           )
         ],
       ),
-    );
-  }
-
-  Widget buttonRow() {
-    final appState = Provider.of<AppState>(context);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        TeritoryButton(
-          text: "Remove Filters",
-          onpressed: () {
-            setState(() {
-              searchText = "";
-              currentSortType = "Price (low to high)";
-              appState.setRangeValues(RangeValues(0, 100000));
-              isExpanded = false;
-              animationController.reverse();
-            });
-            appState.clearFilter();
-          },
-        ),
-        PrimaryButtonWidget(
-          buttonText: "Apply Filters",
-          onPressed: () {
-            appState.setsearchText(searchText);
-            appState.setRangeValues(rangeValues);
-            appState.setSortType(currentSortType);
-
-            setState(() {
-              isExpanded = false;
-              animationController.reverse();
-            });
-          },
-          icon: FeatherIcons.check,
-        )
-      ],
     );
   }
 

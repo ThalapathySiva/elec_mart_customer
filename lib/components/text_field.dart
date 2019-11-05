@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final bool isNumeric;
   final Color color;
   final int maxLength;
+  final TextEditingController controller;
 
   CustomTextField(
       {this.maxLine,
@@ -22,7 +23,8 @@ class CustomTextField extends StatelessWidget {
       this.height,
       this.width,
       this.isNumeric = false,
-      this.isSecure = false});
+      this.isSecure = false,
+      this.controller});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,6 +36,7 @@ class CustomTextField extends StatelessWidget {
         color: color == null ? LIGHT_BLUE_COLOR.withOpacity(0.03) : color,
       ),
       child: TextField(
+        controller: controller,
         obscureText: isSecure,
         onChanged: onChanged,
         maxLength: maxLength,
