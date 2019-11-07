@@ -138,9 +138,6 @@ class _OrderDetailState extends State<OrderDetail> {
       shrinkWrap: true,
       itemCount: widget.order.cartItems.length,
       itemBuilder: (context, index) {
-        print("no stock" +
-            (widget.order.cartItems[index].inventory.inStock <= 0).toString());
-        print(widget.order.cartItems[index].inventory.deleted);
         bool deleted = widget.order.cartItems[index].inventory.inStock <= 0 ||
             widget.order.cartItems[index].inventory.deleted;
 

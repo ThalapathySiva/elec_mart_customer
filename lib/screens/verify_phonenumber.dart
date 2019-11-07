@@ -38,7 +38,7 @@ class _VerifyPhonenumber extends State<VerifyPhonenumber> {
         AppTitleWidget(),
         texts(),
         textFields(),
-        mutationComponent(),
+        validateMutation(),
       ],
     );
   }
@@ -81,7 +81,7 @@ class _VerifyPhonenumber extends State<VerifyPhonenumber> {
     );
   }
 
-  Widget validateMutation(RunMutation runmutation) {
+  Widget validateMutation() {
     return Mutation(
       options: MutationOptions(
         document: customerValidate,
@@ -132,32 +132,6 @@ class _VerifyPhonenumber extends State<VerifyPhonenumber> {
               builder: (context) => DialogStyle(content: "User Not Found"));
         }
       },
-    );
-  }
-
-  Widget mutationComponent() {
-    final appState = Provider.of<AppState>(context);
-    return Mutation(
-      options: MutationOptions(
-        document: updateCustomerAddress,
-        context: {
-          'headers': <String, String>{
-            'Authorization': 'Bearer ${appState.jwtToken}',
-          },
-        },
-      ),
-      builder: (
-        RunMutation runMutation,
-        QueryResult result,
-      ) {
-        return result.loading
-            ? Center(child: CupertinoActivityIndicator())
-            : validateMutation(runMutation);
-      },
-      update: (Cache cache, QueryResult result) {
-        return cache;
-      },
-      onCompleted: (dynamic resultData) async {},
     );
   }
 }

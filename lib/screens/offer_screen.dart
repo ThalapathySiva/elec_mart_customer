@@ -40,10 +40,12 @@ class _OfferScreenState extends State<OfferScreen> {
             padding: EdgeInsets.all(8.0),
             itemCount: widget.inventories.length,
             itemBuilder: (context, index) {
-              return InkWell(
-                onTap: widget.inventories[index].inStock <= 0
-                    ? null
-                    : () {
+              bool deleted = widget.inventories[index].inStock <= 0 ||
+                  widget.inventories[index].deleted;
+              return deleted
+                  ? Container()
+                  : InkWell(
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -53,16 +55,17 @@ class _OfferScreenState extends State<OfferScreen> {
                           ),
                         );
                       },
-                child: HorizontalListItem(
-                  outOfStock: widget.inventories[index].inStock <= 0,
-                  id: widget.inventories[index].id,
-                  imageURL: widget.inventories[index].images,
-                  name: widget.inventories[index].name,
-                  mrpPrice: widget.inventories[index].originalPrice.toString(),
-                  currentPrice:
-                      widget.inventories[index].sellingPrice.toString(),
-                ),
-              );
+                      child: HorizontalListItem(
+                        outOfStock: widget.inventories[index].inStock <= 0,
+                        id: widget.inventories[index].id,
+                        imageURL: widget.inventories[index].images,
+                        name: widget.inventories[index].name,
+                        mrpPrice:
+                            widget.inventories[index].originalPrice.toString(),
+                        currentPrice:
+                            widget.inventories[index].sellingPrice.toString(),
+                      ),
+                    );
             },
           ),
         ),

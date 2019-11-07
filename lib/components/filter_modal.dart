@@ -237,7 +237,12 @@ class _FilterModalState extends State<FilterModal>
         ),
         itemCount: categories.length,
         itemBuilder: (context, index) => InkWell(
-            onTap: () => widget.onCategoryChange(categories[index]),
+            onTap: () {
+              widget.onCategoryChange(categories[index]);
+              isExpanded = false;
+              isFilter = false;
+              animationController.reverse();
+            },
             child: Category(
                 categoryImage: categoryImages[index],
                 name: categories[index],

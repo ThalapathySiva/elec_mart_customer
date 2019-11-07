@@ -125,7 +125,7 @@ class _ItemDetailState extends State<ItemDetail> {
           SizedBox(height: 10),
           Text(
             widget.inventory.description,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
           )
         ],
       ),

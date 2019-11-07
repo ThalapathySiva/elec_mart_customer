@@ -15,6 +15,7 @@ import 'about_app.dart';
 import 'change_number.dart';
 import 'edit_address.dart';
 import 'graphql/getCustomerInfo.dart';
+import 'graphql/get_vendorinfo.dart';
 import 'login.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -69,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
             onTap: () {
-              launch("tel://8144479784");
+              showAlertDialog(context);
             },
             child: SettingsOption(
               title: 'HelpLine',
@@ -186,6 +187,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Map address = {};
         if (addressString != null) address = jsonDecode(addressString);
         return addressContainer(address);
+      },
+    );
+  }
+
+  Widget getVendorInfoQuery() {
+    Map<String, String> phoneNums = {
+      "phoneNumber1": "",
+      "phoneNumber2": "",
+      "PhoneNumber3": "",
+    };
+    return Query(
+      options: QueryOptions(
+        document: getVendorInfo,
+        fetchPolicy: FetchPolicy.noCache,
+        pollInterval: 2,
+      ),
+      builder: (QueryResult result, {VoidCallback refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+        if (result.errors == null && result.data != null) {
+          phoneNums["phoneNumber1"] =
+              result.data["getVendorInfo"]["user"]["phoneNumber"];
+          phoneNums["phoneNumber2"] =
+              result.data["getVendorInfo"]["user"]["alternativePhone1"];
+          phoneNums["phoneNumber3"] =
+              result.data["getVendorInfo"]["user"]["alternativePhone2"];
+          return Column(
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text(phoneNums["phoneNumber1"],
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  launch("tel://${phoneNums["phoneNumber1"]}");
+                },
+              ),
+              SimpleDialogOption(
+                child: Text(
+                    phoneNums["phoneNumber2"] == null
+                        ? "1234568"
+                        : phoneNums["phoneNumber2"],
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  launch("tel://${phoneNums["phoneNumber2"]}");
+                },
+              ),
+              SimpleDialogOption(
+                child: Text(
+                    phoneNums["phoneNumber3"] == null
+                        ? "1234568"
+                        : phoneNums["phoneNumber3"],
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  launch("tel://${phoneNums["phoneNumber3"]}");
+                },
+              )
+            ],
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    SimpleDialog dialog = SimpleDialog(
+      contentPadding: EdgeInsets.all(24),
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16.0))),
+      title: Text('Choose a Number',
+          style: TextStyle(fontWeight: FontWeight.bold)),
+      children: <Widget>[
+        getVendorInfoQuery(),
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
       },
     );
   }

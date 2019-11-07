@@ -146,15 +146,23 @@ class _ChangePassword extends State<ChangePassword> {
           return cache;
         },
         onCompleted: (dynamic resultData) async {
-          Fluttertoast.showToast(
-              msg: "You've successfully Changed Your Password",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIos: 1,
-              textColor: Colors.white,
-              fontSize: 16.0);
-          Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(builder: (context) => Login()), (c) => false);
+          if (resultData['updateCustomerAccount']['error'] != null) {
+            showDialog(
+                context: context,
+                builder: (context) => DialogStyle(
+                    content: resultData['updateCustomerAccount']['error']
+                        ['message']));
+          } else {
+            Fluttertoast.showToast(
+                msg: "You've successfully Changed Your Password",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIos: 1,
+                textColor: Colors.white,
+                fontSize: 16.0);
+            Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context) => Login()), (c) => false);
+          }
         });
   }
 }

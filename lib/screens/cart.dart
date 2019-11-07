@@ -319,34 +319,36 @@ class _CartState extends State<Cart> {
               );
       },
       update: (Cache cache, QueryResult result) {
+        print(result.errors);
         return cache;
       },
       onCompleted: (dynamic resultData) async {
-        if (resultData["error"] != null) {
-          return showDialog(
+        if (resultData['createNewOrder']['error'] != null) {
+          showDialog(
               context: context,
-              builder: (context) => DialogStyle(content: resultData["error"]));
-        }
-
-        final cartState = Provider.of<CartState>(context);
-        final Map order = resultData["createNewOrder"]["orders"][0];
-        if (isTickCreditCard) {
-          cartState.clearCart();
-          isTickCreditCard = false;
-          isTickCOD = false;
-          launch(
-              "http://cezhop.herokuapp.com/paywithpaytm?orderId=${order["id"]}");
+              builder: (context) => DialogStyle(
+                  content: resultData['createNewOrder']['error']['message']));
         } else {
-          cartState.clearCart();
-          isTickCreditCard = false;
-          isTickCOD = false;
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => OrderPlaced(
-                    isCOD: isTickCOD, totalPrice: order["totalPrice"])),
-            (val) => false,
-          );
+          final cartState = Provider.of<CartState>(context);
+          final Map order = resultData["createNewOrder"]["orders"][0];
+          if (isTickCreditCard) {
+            cartState.clearCart();
+            isTickCreditCard = false;
+            isTickCOD = false;
+            launch(
+                "http://cezhop.herokuapp.com/paywithpaytm?orderId=${order["id"]}");
+          } else {
+            cartState.clearCart();
+            isTickCreditCard = false;
+            isTickCOD = false;
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => OrderPlaced(
+                      isCOD: isTickCOD, totalPrice: order["totalPrice"])),
+              (val) => false,
+            );
+          }
         }
       },
     );

@@ -10,6 +10,7 @@ const String posters = """query getPosters{
       imageUrl,
       category,
       inStock,
+      deleted,
       date,
     },
     posterImage,
