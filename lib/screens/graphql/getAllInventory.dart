@@ -16,6 +16,10 @@ const String getAllInventory = """query GetAllInventory{
       category,
       inStock,
       date,
+      length,
+      breadth,
+      deleted,
+      height
     }
   }
 }""";

@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/cart_item.dart';
 import 'package:elec_mart_customer/components/dialog_style.dart';
+import 'package:elec_mart_customer/components/imageSelectionWidget.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/rating.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
@@ -26,6 +29,7 @@ class AddReview extends StatefulWidget {
 class _AddReviewState extends State<AddReview> {
   String errors = "";
   double userRating = 0;
+  List inventoryImageUrls = [];
 
   String userReview = "";
   @override
@@ -65,6 +69,80 @@ class _AddReviewState extends State<AddReview> {
               },
               rating: userRating,
             )),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          ImageSelectionWidget(
+            existingUrl:
+                inventoryImageUrls.length == 0 ? null : inventoryImageUrls[0],
+            onUserImageSet: (imgUrl) {
+              setState(() {
+                if (inventoryImageUrls.length >= 1)
+                  inventoryImageUrls.removeAt(0);
+                inventoryImageUrls.insert(0, imgUrl);
+              });
+            },
+          ),
+          if (inventoryImageUrls.length >= 1)
+            ImageSelectionWidget(
+              existingUrl:
+                  inventoryImageUrls.length < 2 ? null : inventoryImageUrls[1],
+              onUserImageSet: (imgUrl) {
+                setState(() {
+                  if (inventoryImageUrls.length >= 2)
+                    inventoryImageUrls.removeAt(1);
+                  inventoryImageUrls.insert(1, imgUrl);
+                });
+              },
+            ),
+          if (inventoryImageUrls.length >= 2)
+            ImageSelectionWidget(
+              existingUrl:
+                  inventoryImageUrls.length < 3 ? null : inventoryImageUrls[2],
+              onUserImageSet: (imgUrl) {
+                setState(() {
+                  if (inventoryImageUrls.length >= 3)
+                    inventoryImageUrls.removeAt(2);
+                  inventoryImageUrls.insert(2, imgUrl);
+                });
+              },
+            ),
+        ],
+      ),
+      Container(
+        margin: EdgeInsets.only(top: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            if (inventoryImageUrls.length >= 3)
+              ImageSelectionWidget(
+                existingUrl: inventoryImageUrls.length < 4
+                    ? null
+                    : inventoryImageUrls[3],
+                onUserImageSet: (imgUrl) {
+                  setState(() {
+                    if (inventoryImageUrls.length >= 4)
+                      inventoryImageUrls.removeAt(3);
+                    inventoryImageUrls.insert(3, imgUrl);
+                  });
+                },
+              ),
+            if (inventoryImageUrls.length >= 4)
+              ImageSelectionWidget(
+                existingUrl: inventoryImageUrls.length < 5
+                    ? null
+                    : inventoryImageUrls[4],
+                onUserImageSet: (imgUrl) {
+                  setState(() {
+                    if (inventoryImageUrls.length >= 5)
+                      inventoryImageUrls.removeAt(4);
+                    inventoryImageUrls.insert(4, imgUrl);
+                  });
+                },
+              ),
+          ],
+        ),
       ),
       Container(
         padding: EdgeInsets.all(24),
@@ -139,6 +217,7 @@ class _AddReviewState extends State<AddReview> {
                       "inventoryId": widget.inventory.id,
                       "rating": userRating,
                       "text": userReview,
+                      "images": jsonEncode(inventoryImageUrls),
                     });
                   },
                 ),

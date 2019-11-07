@@ -6,6 +6,7 @@ const String getReviews = """query getReviews(\$inventoryId:String){
       id,
       rating,
       text,
+      images,
       customer{
         name
       }

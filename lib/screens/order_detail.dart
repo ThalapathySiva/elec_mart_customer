@@ -138,18 +138,27 @@ class _OrderDetailState extends State<OrderDetail> {
       shrinkWrap: true,
       itemCount: widget.order.cartItems.length,
       itemBuilder: (context, index) {
+        print("no stock" +
+            (widget.order.cartItems[index].inventory.inStock <= 0).toString());
+        print(widget.order.cartItems[index].inventory.deleted);
+        bool deleted = widget.order.cartItems[index].inventory.inStock <= 0 ||
+            widget.order.cartItems[index].inventory.deleted;
+
         return InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ItemDetail(
-                          inventory: widget.order.cartItems[index].inventory,
-                          description:
-                              widget.order.cartItems[index].description,
-                          name: widget.order.cartItems[index].name,
-                        )));
-          },
+          onTap: deleted
+              ? null
+              : () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ItemDetail(
+                                inventory:
+                                    widget.order.cartItems[index].inventory,
+                                description:
+                                    widget.order.cartItems[index].description,
+                                name: widget.order.cartItems[index].name,
+                              )));
+                },
           child: CartItem(
             itemStatus: "${widget.order.cartItems[index].itemStatus}",
             imageUrl: "${widget.order.cartItems[index].inventory.images[0]}",

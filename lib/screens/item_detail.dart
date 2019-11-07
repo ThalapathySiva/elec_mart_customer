@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:elec_mart_customer/components/rating.dart';
 
 import 'package:elec_mart_customer/components/app_title.dart';
@@ -84,7 +86,6 @@ class _ItemDetailState extends State<ItemDetail> {
               SizedBox(height: 10),
               descp(),
               SizedBox(height: 10),
-              vendorDetails(),
               SizedBox(height: 10),
               getCustomerReviews(),
               SizedBox(height: 10),
@@ -126,44 +127,6 @@ class _ItemDetailState extends State<ItemDetail> {
             widget.inventory.description,
             style: TextStyle(fontSize: 16),
           )
-        ],
-      ),
-    );
-  }
-
-  Widget vendorDetails() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Sold By",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
-          ),
-          SizedBox(height: 10),
-          VendorDetail(
-            storeImage: widget.vendor != null
-                ? widget.vendor.shopPhotoUrl
-                : widget.inventory.vendor.shopPhotoUrl,
-            name: widget.vendor != null
-                ? widget.vendor.storeName
-                : widget.inventory.vendor.storeName,
-            address: widget.vendor != null
-                ? widget.vendor.address['addressLine'] +
-                    "\n" +
-                    widget.vendor.address['city']
-                : widget.inventory.vendor.address['addressLine'] +
-                    "\n" +
-                    widget.inventory.vendor.address['city'],
-          ),
-          Divider(height: 10, thickness: 1),
-          SizedBox(height: 10),
-          Text(
-            "Item Reviews",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
-          ),
         ],
       ),
     );
@@ -509,16 +472,15 @@ class _ItemDetailState extends State<ItemDetail> {
         if (result.loading) return Center(child: CupertinoActivityIndicator());
         if (result.hasErrors)
           return Center(child: Text("Oops something went wrong"));
-        List<ReviewsModel> reviews;
-
-        List reviewList = result.data['getReviews']['reviews'];
-
-        reviews =
-            reviewList.map((item) => ReviewsModel.fromJson(item)).toList();
 
         if (result.data != null &&
             result.data['getReviews'] != null &&
             result.data["getReviews"]["averageRating"] != null) {
+          List reviewList = result.data['getReviews']['reviews'];
+
+          List<ReviewsModel> reviews =
+              reviewList.map((item) => ReviewsModel.fromJson(item)).toList();
+
           return ratingAndReviews(
               result.data["getReviews"]["canReview"],
               reviews,
@@ -551,15 +513,13 @@ class _ItemDetailState extends State<ItemDetail> {
         if (result.loading) return Center(child: CupertinoActivityIndicator());
         if (result.hasErrors)
           return Center(child: Text("Oops something went wrong"));
-        List<QuestionAnswerModel> qa;
-
-        List reviewList = result.data['getQA'];
-
-        qa = reviewList
-            .map((item) => QuestionAnswerModel.fromJson(item))
-            .toList();
 
         if (result.data != null && result.data['getQA'] != null) {
+          List reviewList = result.data['getQA'];
+
+          List<QuestionAnswerModel> qa = reviewList
+              .map((item) => QuestionAnswerModel.fromJson(item))
+              .toList();
           return questions(qa);
         }
         return Container();

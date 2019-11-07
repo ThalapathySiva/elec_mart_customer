@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:elec_mart_customer/components/cart_item.dart';
+import 'package:elec_mart_customer/components/dialog_style.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
@@ -48,6 +49,17 @@ class _CartState extends State<Cart> {
           getAddressQuery(),
           Container(height: 3, color: GREY_COLOR),
           paymentMode(),
+          if (isTickCreditCard)
+            Container(
+              padding: EdgeInsets.only(left: 24, top: 10),
+              child: Text(
+                "* We recommend you to use UPI for Payment",
+                style: TextStyle(
+                    color: RED_COLOR,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12),
+              ),
+            ),
           if ((isTickCOD || isTickCreditCard) &&
               cartState.cartItems.length != 0)
             Container(
@@ -310,6 +322,12 @@ class _CartState extends State<Cart> {
         return cache;
       },
       onCompleted: (dynamic resultData) async {
+        if (resultData["error"] != null) {
+          return showDialog(
+              context: context,
+              builder: (context) => DialogStyle(content: resultData["error"]));
+        }
+
         final cartState = Provider.of<CartState>(context);
         final Map order = resultData["createNewOrder"]["orders"][0];
         if (isTickCreditCard) {

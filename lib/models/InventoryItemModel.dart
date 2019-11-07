@@ -9,6 +9,10 @@ class InventoryItemModel {
   final double sellingPrice;
   final String description;
   final double inStock;
+  final double height;
+  final bool deleted;
+  final double breadth;
+  final double length;
   final String category;
   final DateTime date;
   final VendorModel vendor;
@@ -16,6 +20,10 @@ class InventoryItemModel {
 
   InventoryItemModel(
       {this.images,
+      this.length,
+      this.breadth,
+      this.deleted,
+      this.height,
       this.vendor,
       this.originalPrice,
       this.date,
@@ -27,6 +35,7 @@ class InventoryItemModel {
       this.inStock});
 
   factory InventoryItemModel.fromJson(Map<dynamic, dynamic> json) {
+ //   print(json['deleted'] == false ? false : true);
     return InventoryItemModel(
         name: json['name'],
         id: json['id'],
@@ -34,6 +43,10 @@ class InventoryItemModel {
         originalPrice: json['originalPrice'].toDouble(),
         sellingPrice: json['sellingPrice'].toDouble(),
         category: json['category'],
+        length: json['length']?.toDouble(),
+        breadth: json['breadth']?.toDouble(),
+        height: json['height']?.toDouble(),
+        deleted: json['deleted'] == false ? false : true,
         date: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['date']) * 1000,
         ),
