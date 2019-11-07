@@ -6,6 +6,7 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/UserModel.dart';
 import 'package:elec_mart_customer/screens/create_account.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
+import 'package:elec_mart_customer/screens/verify_phonenumber.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _LoginState extends State<Login> {
             padding: EdgeInsets.only(left: 24, right: 24, top: 50),
             child: Image.asset("assets/images/logo.png")),
         login(),
-        SizedBox(height: 80),
+        SizedBox(height: 60),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 100),
           child: SecondaryButton(
@@ -60,7 +61,17 @@ class _LoginState extends State<Login> {
                   MaterialPageRoute(builder: (context) => CreateAccount()));
             },
           ),
-        )
+        ),
+        SizedBox(height: 10),
+        InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => VerifyPhonenumber()));
+            },
+            child: Center(
+                child: Text("Forgot Password ?",
+                    style: TextStyle(color: WHITE_COLOR)))),
+        SizedBox(height: 20),
       ],
     );
   }

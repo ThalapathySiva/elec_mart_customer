@@ -1,6 +1,6 @@
 const updateCustomerAddress = '''
-mutation UpdateCustomerAccount(\$address:AddressType,\$phoneNumber:String){
-    updateCustomerAccount(address:\$address,phoneNumber:\$phoneNumber){
+mutation UpdateCustomerAccount(\$address:AddressType,\$phoneNumber:String,\$name:String,\$password:String,\$otpToken:String){
+    updateCustomerAccount(address:\$address,phoneNumber:\$phoneNumber,name:\$name,password:\$password,otpToken:\$otpToken){
       user{
       phoneNumber
       id

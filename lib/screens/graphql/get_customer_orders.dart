@@ -26,6 +26,7 @@ query GetCustomerOrders{
         phoneNumber
       }
       category,
+      deleted,
       inStock,
       date,
         }

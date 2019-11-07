@@ -19,12 +19,12 @@ class OTPScreen extends StatefulWidget {
 
 class _OTPScreenState extends State<OTPScreen> {
   String phoneNo;
-  String smsOTP;
+  String smsOTP = "";
   String verificationId;
   bool isVerifyButtonClicked = false;
 
   String errorMessage = null;
-  
+
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   signIn() async {
@@ -128,7 +128,9 @@ class _OTPScreenState extends State<OTPScreen> {
             labelText: "OTP",
             errorText: errorMessage,
             onChanged: (val) {
-              this.smsOTP = val;
+              setState(() {
+                smsOTP = val;
+              });
             },
           ),
           SizedBox(height: 20),
@@ -142,30 +144,32 @@ class _OTPScreenState extends State<OTPScreen> {
                     )
                   : PrimaryButtonWidget(
                       buttonText: "Verify",
-                      onPressed: () async {
-                        setState(() {
-                          isVerifyButtonClicked = true;
-                        });
-                        try {
-                          final AuthCredential credential =
-                              PhoneAuthProvider.getCredential(
-                                  verificationId: verificationId,
-                                  smsCode: smsOTP);
-                          print(
-                              "RECEIVED CREDENTIAL : " + credential.toString());
-                          await firebaseAuth
-                              .signInWithCredential(credential)
-                              .then((authResult) {
-                            //OTP verification success
-                            print("OTP VERIFICATION SUCCESS");
-                            widget.onOTPSuccess();
-                          }, onError: (error) {
-                            handleError(error);
-                          });
-                        } catch (e) {
-                          handleError(e);
-                        }
-                      },
+                      onPressed: smsOTP.length == 0
+                          ? null
+                          : () async {
+                              setState(() {
+                                isVerifyButtonClicked = true;
+                              });
+                              try {
+                                final AuthCredential credential =
+                                    PhoneAuthProvider.getCredential(
+                                        verificationId: verificationId,
+                                        smsCode: smsOTP);
+                                print("RECEIVED CREDENTIAL : " +
+                                    credential.toString());
+                                await firebaseAuth
+                                    .signInWithCredential(credential)
+                                    .then((authResult) {
+                                  //OTP verification success
+                                  print("OTP VERIFICATION SUCCESS");
+                                  widget.onOTPSuccess();
+                                }, onError: (error) {
+                                  handleError(error);
+                                });
+                              } catch (e) {
+                                handleError(e);
+                              }
+                            },
                     )
             ],
           )
