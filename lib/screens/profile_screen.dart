@@ -79,6 +79,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
+            onTap: () {
+              launchURL('sivaramsiva16@gmail.com',
+                  'Regarding Be Shoppi Customer App', 'Write Here');
+            },
+            child: SettingsOption(
+              title: 'Support & Feedback',
+              color: BLACK_COLOR,
+            ),
+          ),
+          Container(padding: EdgeInsets.only(top: 10)),
+          InkWell(
             onTap: () async {
               final appState = Provider.of<AppState>(context);
               final cartState = Provider.of<CartState>(context);
@@ -117,6 +128,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
+  }
+
+  launchURL(String toMailId, String subject, String body) async {
+    var url = 'mailto:$toMailId?subject=$subject&body=$body';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget textWidget(

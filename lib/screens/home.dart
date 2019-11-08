@@ -2,11 +2,15 @@ import 'package:carousel_pro/carousel_pro.dart';
 import 'package:elec_mart_customer/components/filter_modal.dart';
 import 'package:elec_mart_customer/components/horizontal_list_item.dart';
 import 'package:elec_mart_customer/components/horizontal_new_item.dart';
+import 'package:elec_mart_customer/components/secondary_button.dart';
+import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/components/vertical_list_item.dart';
 import 'package:elec_mart_customer/components/vertical_new_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/models/OfferModel.dart';
+import 'package:elec_mart_customer/screens/edit_address.dart';
+import 'package:elec_mart_customer/screens/graphql/can_ship.dart';
 import 'package:elec_mart_customer/screens/graphql/get_posters.dart';
 import 'package:elec_mart_customer/screens/item_detail.dart';
 import 'package:elec_mart_customer/screens/offer_screen.dart';
@@ -29,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isGrid = true;
   String selectedCategory = "All";
+  final searchTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +44,57 @@ class _HomeScreenState extends State<HomeScreen> {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: Stack(children: <Widget>[
-        Positioned(top: 50, child: getInventoryQuery()),
-        Positioned(
-          top: 0,
-          child: FilterModal(
-            selectedCategory: selectedCategory,
-            onCategoryChange: (val) {
-              setState(() {
-                selectedCategory = val;
-              });
-            },
-          ),
-        ),
-      ]),
+      child: canShipQuery(),
+    );
+  }
+
+  Widget weDontServeTHisArea() {
+    return Container(
+      margin: EdgeInsets.all(24),
+      child: Column(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              SizedBox(height: 50),
+              Image.asset("assets/images/cactus.png", height: 256, width: 256),
+              text("We don't here yet !", 30, PRIMARY_COLOR.withOpacity(0.3),
+                  false),
+              SizedBox(height: 20),
+              Text(
+                "Why don't you explore a different location?",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: PRIMARY_COLOR.withOpacity(0.3),
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 50),
+              SecondaryButton(
+                buttonText: "Try Changing Location",
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditAddress(showBackButton: true)));
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget searchField() {
+    final appState = Provider.of<AppState>(context);
+    if (appState.getSearchText == "") searchTextController.clear();
+    return CustomTextField(
+      controller: searchTextController,
+      labelText: "Search for items",
+      onChanged: (val) {
+        appState.setsearchText(val);
+      },
     );
   }
 
@@ -334,6 +376,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
+                Container(
+                    padding: EdgeInsets.only(left: 24, right: 24, top: 10),
+                    child: searchField()),
                 getPostersQuery(),
                 Container(
                     padding: EdgeInsets.symmetric(horizontal: 24),
@@ -401,6 +446,54 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }
+        return Container();
+      },
+    );
+  }
+
+  Widget canShipQuery() {
+    final appState = Provider.of<AppState>(context);
+
+    return Query(
+      options: QueryOptions(
+        document: canShip,
+        pollInterval: 3,
+        fetchPolicy: FetchPolicy.noCache,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (result, {refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+        if (result.data["canShipItem"] != null) {
+          bool canShiptoCustomer = result.data["canShipItem"];
+          if (canShiptoCustomer) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Stack(children: <Widget>[
+                Positioned(top: 50, child: getInventoryQuery()),
+                Positioned(
+                    top: 0,
+                    child: FilterModal(
+                      selectedCategory: selectedCategory,
+                      onCategoryChange: (val) {
+                        setState(() {
+                          selectedCategory = val;
+                        });
+                      },
+                    )),
+              ]),
+            );
+          } else {
+            return weDontServeTHisArea();
+          }
+        }
+
         return Container();
       },
     );

@@ -3,19 +3,12 @@ import 'package:elec_mart_customer/components/dialog_style.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
-import 'package:elec_mart_customer/models/UserModel.dart';
 import 'package:elec_mart_customer/screens/change_password.dart';
-import 'package:elec_mart_customer/screens/login.dart';
-import 'package:elec_mart_customer/screens/nav_screens.dart';
-import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'graphql/customerValidate.dart';
-import 'graphql/updateCustomerAddress.dart';
 import 'otp.dart';
 
 class VerifyPhonenumber extends StatefulWidget {

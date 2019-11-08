@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 import 'package:elec_mart_customer/components/rating.dart';
 
 import 'package:elec_mart_customer/components/app_title.dart';
 import 'package:elec_mart_customer/components/primary_button.dart';
+import 'package:elec_mart_customer/components/review_image_component.dart';
 import 'package:elec_mart_customer/components/teritory_button.dart';
-import 'package:elec_mart_customer/components/vendor_detail_item.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/models/InventoryItemModel.dart';
 import 'package:elec_mart_customer/models/QuestionAnswerModel.dart';
@@ -39,11 +37,11 @@ class ItemDetail extends StatefulWidget {
 }
 
 class _ItemDetailState extends State<ItemDetail> {
-  GlobalKey<ScaffoldState> scaffold_state = new GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> scaffoldState = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffold_state,
+      key: scaffoldState,
       body: layout(),
     );
   }
@@ -125,7 +123,7 @@ class _ItemDetailState extends State<ItemDetail> {
           SizedBox(height: 10),
           Text(
             widget.inventory.description,
-            style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           )
         ],
       ),
@@ -278,6 +276,9 @@ class _ItemDetailState extends State<ItemDetail> {
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )),
+                  SizedBox(height: 10),
+                  ReviewImageComponent(images: reviews[index].images),
+                  SizedBox(height: 10),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Text("- ${reviews[index].user.name}",
@@ -431,11 +432,11 @@ class _ItemDetailState extends State<ItemDetail> {
                     action: SnackBarAction(
                       label: "Ok",
                       onPressed: () {
-                        scaffold_state.currentState.hideCurrentSnackBar();
+                        scaffoldState.currentState.hideCurrentSnackBar();
                       },
                     ),
                   );
-                  scaffold_state.currentState.showSnackBar(snackBar);
+                  scaffoldState.currentState.showSnackBar(snackBar);
                   cartState.setCartItems({
                     "name": widget.inventory.name,
                     "imageUrl": widget.inventory.images,
@@ -480,6 +481,8 @@ class _ItemDetailState extends State<ItemDetail> {
 
           List<ReviewsModel> reviews =
               reviewList.map((item) => ReviewsModel.fromJson(item)).toList();
+
+          print(result.data["getReviews"]["canReview"]);
 
           return ratingAndReviews(
               result.data["getReviews"]["canReview"],

@@ -1,4 +1,5 @@
 import 'package:elec_mart_customer/components/order_status_component.dart';
+import 'package:elec_mart_customer/components/secondary_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/constants/strings.dart';
 import 'package:elec_mart_customer/models/OrderModel.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/rendering.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'edit_address.dart';
+import 'graphql/can_ship.dart';
 import 'graphql/get_customer_orders.dart';
 
 class Orders extends StatefulWidget {
@@ -30,19 +33,89 @@ class _OrdersState extends State<Orders> {
     return SafeArea(
       child: Container(
         padding: EdgeInsets.only(left: 24, right: 24, top: 24),
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: canShipQuery(),
+      ),
+    );
+  }
+
+  Widget canShipQuery() {
+    final appState = Provider.of<AppState>(context);
+
+    return Query(
+      options: QueryOptions(
+        document: canShip,
+        pollInterval: 3,
+        fetchPolicy: FetchPolicy.noCache,
+        context: {
+          'headers': <String, String>{
+            'Authorization': 'Bearer ${appState.jwtToken}',
+          },
+        },
+      ),
+      builder: (result, {refetch}) {
+        if (result.loading) return Center(child: CupertinoActivityIndicator());
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+        if (result.data["canShipItem"] != null) {
+          bool canShiptoCustomer = result.data["canShipItem"];
+          if (canShiptoCustomer) {
+            return ListView(
+              physics: BouncingScrollPhysics(),
               children: <Widget>[
-                Center(child: text("Orders", 16, BLACK_COLOR, true)),
-                SizedBox(height: 20),
-                getCustomerOrdersQuery(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(child: text("Orders", 16, BLACK_COLOR, true)),
+                    SizedBox(height: 20),
+                    getCustomerOrdersQuery(),
+                  ],
+                ),
               ],
-            ),
-          ],
-        ),
+            );
+          } else {
+            return weDontServeTHisArea();
+          }
+        }
+
+        return Container();
+      },
+    );
+  }
+
+  Widget weDontServeTHisArea() {
+    return Container(
+      margin: EdgeInsets.all(24),
+      child: Column(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              SizedBox(height: 50),
+              Image.asset("assets/images/cactus.png", height: 256, width: 256),
+              text("We don't here yet !", 30, PRIMARY_COLOR.withOpacity(0.3),
+                  false),
+              SizedBox(height: 20),
+              Text(
+                "Soonly we will be.",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: PRIMARY_COLOR.withOpacity(0.3),
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 50),
+              SecondaryButton(
+                buttonText: "Try Changing Location",
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditAddress(showBackButton: true)));
+                },
+              )
+            ],
+          )
+        ],
       ),
     );
   }
