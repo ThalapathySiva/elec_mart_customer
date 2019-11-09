@@ -23,7 +23,7 @@ class HorizontalNewItem extends StatelessWidget {
         Container(
           padding: EdgeInsets.only(top: 10),
           child: HorizontalListItem(
-            outOfStock:outOfStock,
+            outOfStock: outOfStock,
             id: id,
             imageURL: imageURL,
             name: name,
@@ -44,7 +44,7 @@ class HorizontalNewItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: PRIMARY_COLOR,
+          color: outOfStock ? RED_COLOR : PRIMARY_COLOR,
         ),
         child: Text(
           "NEW",

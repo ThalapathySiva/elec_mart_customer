@@ -5,6 +5,7 @@ class OrderStatuses {
   static const String DELIVERED_AND_PAID = 'DELIVERED_AND_PAID';
   static const String CANCELLED_BY_STORE = 'CANCELLED_BY_STORE';
   static const String CANCELLED_BY_CUSTOMER = 'CANCELLED_BY_CUSTOMER';
+  static const String TRANSACTION_FAILED = 'TRANSACTION_FAILED';
 }
 
 const String STRING_PICKED_UP =
@@ -18,6 +19,8 @@ const String STRING_RECEIVED_BY_STORE =
 
 const String STRING_DELIVERED_AND_PAID =
     'Your order has been delivered to you.';
+
+const String STRING_TRANSACTION_FAILED = 'Your transaction was failed';
 
 const String STRING_CANCELLED_BY_STORE =
     'Your order was cancelled by the store.';
@@ -51,6 +54,10 @@ class StringResolver {
         {
           return STRING_RECEIVED_BY_STORE;
         }
+      case OrderStatuses.TRANSACTION_FAILED:
+      {
+        return STRING_TRANSACTION_FAILED;
+      }
     }
     return 'INVALID_STATUS_PROVIDED';
   }

@@ -26,7 +26,10 @@ class VerticalListItem extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: GREY_COLOR,
-        border: showBorder ? Border.all(width: 2, color: PRIMARY_COLOR) : null,
+        border: showBorder
+            ? Border.all(
+                width: 2, color: outOfStock ? RED_COLOR : PRIMARY_COLOR)
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

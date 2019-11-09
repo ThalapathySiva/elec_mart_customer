@@ -44,7 +44,7 @@ class VerticalNewItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: PRIMARY_COLOR,
+          color: outOfStock ? RED_COLOR : PRIMARY_COLOR,
         ),
         child: Text(
           "NEW",
