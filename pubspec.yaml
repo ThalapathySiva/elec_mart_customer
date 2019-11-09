@@ -37,6 +37,7 @@ dependencies:
   smooth_star_rating: 1.0.3
   firebase_auth:
   auto_size_text: ^2.1.0
+  firebase_messaging: ^5.1.8
 
 
 
