@@ -3,9 +3,13 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/cart.dart';
 import 'package:elec_mart_customer/screens/orders.dart';
 import 'package:elec_mart_customer/screens/profile_screen.dart';
+import 'package:elec_mart_customer/service/FirebaseNotificationsHandler.dart';
+import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'home.dart';
 

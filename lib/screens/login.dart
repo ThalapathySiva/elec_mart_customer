@@ -7,6 +7,7 @@ import 'package:elec_mart_customer/models/UserModel.dart';
 import 'package:elec_mart_customer/screens/create_account.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
 import 'package:elec_mart_customer/screens/verify_phonenumber.dart';
+import 'package:elec_mart_customer/service/FirebaseNotificationsHandler.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -180,6 +181,7 @@ class _LoginState extends State<Login> {
             appState.setToken(token);
             appState.setName(user.name);
             appState.setPhoneNumber(user.phoneNumber);
+            handleNotify();
 
             Navigator.pushReplacement(
               context,
@@ -189,5 +191,19 @@ class _LoginState extends State<Login> {
         }
       },
     );
+  }
+
+  handleNotify() {
+    final appState = Provider.of<AppState>(context);
+
+    final HttpLink httpLink = HttpLink(
+      uri: 'http://cezhop.herokuapp.com/graphql',
+    );
+    var graphQlClient = GraphQLClient(
+      cache: InMemoryCache(),
+      link: httpLink as Link,
+    );
+    FirebaseNotificationsHandler(
+        graphQLClient: graphQlClient, jwtToken: appState.jwtToken);
   }
 }

@@ -482,7 +482,6 @@ class _ItemDetailState extends State<ItemDetail> {
           List<ReviewsModel> reviews =
               reviewList.map((item) => ReviewsModel.fromJson(item)).toList();
 
-          print(result.data["getReviews"]["canReview"]);
 
           return ratingAndReviews(
               result.data["getReviews"]["canReview"],

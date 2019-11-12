@@ -35,7 +35,6 @@ class InventoryItemModel {
       this.inStock});
 
   factory InventoryItemModel.fromJson(Map<dynamic, dynamic> json) {
- //   print(json['deleted'] == false ? false : true);
     return InventoryItemModel(
         name: json['name'],
         id: json['id'],

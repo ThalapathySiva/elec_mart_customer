@@ -4,6 +4,7 @@ const String getVendorInfo = """query getVendorInfo{
     phoneNumber
     alternativePhone1
     alternativePhone2
+    email
     }
     error{
       path

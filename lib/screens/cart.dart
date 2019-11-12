@@ -105,11 +105,23 @@ class _CartState extends State<Cart> {
 
     return Container(
       padding: EdgeInsets.all(24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          text("Total", 16, BLACK_COLOR, true),
-          text("Rs ${cartState.totalPrice}", 20, PRIMARY_COLOR, true)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              text("Total", 16, BLACK_COLOR, true),
+              text("Rs ${cartState.totalPrice}", 20, PRIMARY_COLOR, true)
+            ],
+          ),
+          text(
+              cartState.totalPrice > 1500
+                  ? "Free Shipping"
+                  : "(Shipping charge Rs 45)",
+              16,
+              RED_COLOR,
+              true),
         ],
       ),
     );
@@ -319,7 +331,6 @@ class _CartState extends State<Cart> {
               );
       },
       update: (Cache cache, QueryResult result) {
-        print(result.errors);
         return cache;
       },
       onCompleted: (dynamic resultData) async {

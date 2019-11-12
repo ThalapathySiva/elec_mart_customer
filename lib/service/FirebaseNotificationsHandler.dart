@@ -3,9 +3,11 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 class FirebaseNotificationsHandler {
   final GraphQLClient graphQLClient;
+  final String jwtToken;
   FirebaseMessaging firebaseMessaging;
 
   FirebaseNotificationsHandler({
+    this.jwtToken,
     this.graphQLClient,
   }) {
     firebaseMessaging = FirebaseMessaging();
@@ -18,6 +20,11 @@ class FirebaseNotificationsHandler {
   sendTokenToServer(String token) {
     graphQLClient
         .mutate(MutationOptions(
+      context: {
+        'headers': <String, String>{
+          'Authorization': 'Bearer $jwtToken',
+        },
+      },
       document: '''
       mutation {
         integrateFCMToken(fcmToken: "$token") {

@@ -3,7 +3,6 @@ import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/edit_address.dart';
 import 'package:elec_mart_customer/screens/login.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
-import 'package:elec_mart_customer/service/FirebaseNotificationsHandler.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       cache: InMemoryCache(),
       link: httpLink as Link,
     );
-    FirebaseNotificationsHandler(graphQLClient: graphQlClient);
     ValueNotifier<GraphQLClient> client = ValueNotifier(graphQlClient);
     return GraphQLProvider(
       client: client,

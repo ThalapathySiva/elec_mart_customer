@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:elec_mart_customer/components/setting_option.dart';
+import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
+import 'package:elec_mart_customer/models/UserModel.dart';
+import 'package:elec_mart_customer/screens/graphql/fcm_integreate_token.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:elec_mart_customer/state/cart_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +17,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'about_app.dart';
 import 'change_number.dart';
 import 'edit_address.dart';
+import 'edit_name.dart';
 import 'graphql/getCustomerInfo.dart';
 import 'graphql/get_vendorinfo.dart';
 import 'login.dart';
@@ -38,9 +42,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           textWidget('${appState.name}', TextAlign.center, PRIMARY_COLOR, 24),
           textWidget(
               '${appState.phoneNumber}', TextAlign.center, BLACK_COLOR, 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TeritoryButton(
+                text: 'Edit Name',
+                onpressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditName()),
+                  );
+                },
+              ),
+            ],
+          ),
           Container(padding: EdgeInsets.only(top: 20)),
           getAddressQuery(),
-          Container(padding: EdgeInsets.only(top: 50)),
+          Container(padding: EdgeInsets.only(top: 20)),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -68,50 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           Container(padding: EdgeInsets.only(top: 10)),
-          InkWell(
-            onTap: () {
-              showAlertDialog(context);
-            },
-            child: SettingsOption(
-              title: 'HelpLine',
-              color: BLACK_COLOR,
-            ),
-          ),
+          getAdminInfo(),
           Container(padding: EdgeInsets.only(top: 10)),
-          InkWell(
-            onTap: () {
-              launchURL('sivaramsiva16@gmail.com',
-                  'Regarding Be Shoppi Customer App', 'Write Here');
-            },
-            child: SettingsOption(
-              title: 'Support & Feedback',
-              color: BLACK_COLOR,
-            ),
-          ),
-          Container(padding: EdgeInsets.only(top: 10)),
-          InkWell(
-            onTap: () async {
-              final appState = Provider.of<AppState>(context);
-              final cartState = Provider.of<CartState>(context);
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.clear();
-              appState.clearApp();
-              cartState.clearCart();
-              Fluttertoast.showToast(
-                  msg: "You've successfully logged out",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIos: 1,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Login()));
-            },
-            child: SettingsOption(
-              title: 'Log Out',
-              color: BLACK_COLOR,
-            ),
-          ),
+          notifyMutationComponent(),
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
             onTap: () {
@@ -185,6 +162,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget phoneNumberRow(String number) {
+    if (number != null)
+      return InkWell(
+        onTap: () {
+          launch("tel://$number");
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Text(number),
+              Icon(Icons.call),
+            ],
+          ),
+        ),
+      );
+    else
+      return Container();
+  }
+
+  Widget helpLineAndMailButton(
+      email, phoneNumber1, phoneNumber2, phoneNumber3) {
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            launchURL(email, 'Regarding Be Shoppi Vendor App', 'Write here');
+          },
+          child: SettingsOption(
+            title: 'Mail your queries',
+            color: BLACK_COLOR,
+          ),
+        ),
+        Container(padding: EdgeInsets.only(top: 3)),
+        InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  contentPadding: EdgeInsets.all(24),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16.0))),
+                  title: Text(
+                    'Choose a number',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(height: 12),
+                      phoneNumberRow(phoneNumber1),
+                      phoneNumberRow(phoneNumber2),
+                      phoneNumberRow(phoneNumber3),
+                      Container(height: 12),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+          child: SettingsOption(
+            title: 'Help Line',
+            color: BLACK_COLOR,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getAdminInfo() {
+    return Query(
+      options: QueryOptions(
+        document: getVendorInfo,
+        fetchPolicy: FetchPolicy.noCache,
+        pollInterval: 1,
+      ),
+      builder: (QueryResult result, {VoidCallback refetch}) {
+        if (result.hasErrors)
+          return Center(child: Text("Oops something went wrong"));
+        if (result.data != null &&
+            result.data['getVendorInfo']['user'] != null) {
+          final user = UserModel.fromJson(result.data['getVendorInfo']['user']);
+          return helpLineAndMailButton(
+              user.email,
+              user.phoneNumber,
+              result.data["getVendorInfo"]["user"]["alternativePhone1"],
+              result.data["getVendorInfo"]["user"]["alternativePhone2"]);
+        }
+        return Container();
+      },
+    );
+  }
+
   Widget getAddressQuery() {
     final appState = Provider.of<AppState>(context);
     return Query(
@@ -211,84 +287,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget getVendorInfoQuery() {
-    Map<String, String> phoneNums = {
-      "phoneNumber1": "",
-      "phoneNumber2": "",
-      "PhoneNumber3": "",
-    };
-    return Query(
-      options: QueryOptions(
-        document: getVendorInfo,
-        fetchPolicy: FetchPolicy.noCache,
-        pollInterval: 2,
-      ),
-      builder: (QueryResult result, {VoidCallback refetch}) {
-        if (result.loading) return Center(child: CupertinoActivityIndicator());
-        if (result.hasErrors)
-          return Center(child: Text("Oops something went wrong"));
-        if (result.errors == null && result.data != null) {
-          phoneNums["phoneNumber1"] =
-              result.data["getVendorInfo"]["user"]["phoneNumber"];
-          phoneNums["phoneNumber2"] =
-              result.data["getVendorInfo"]["user"]["alternativePhone1"];
-          phoneNums["phoneNumber3"] =
-              result.data["getVendorInfo"]["user"]["alternativePhone2"];
-          return Column(
-            children: <Widget>[
-              SimpleDialogOption(
-                child: Text(phoneNums["phoneNumber1"],
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  launch("tel://${phoneNums["phoneNumber1"]}");
-                },
-              ),
-              SimpleDialogOption(
-                child: Text(
-                    phoneNums["phoneNumber2"] == null
-                        ? "1234568"
-                        : phoneNums["phoneNumber2"],
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  launch("tel://${phoneNums["phoneNumber2"]}");
-                },
-              ),
-              SimpleDialogOption(
-                child: Text(
-                    phoneNums["phoneNumber3"] == null
-                        ? "1234568"
-                        : phoneNums["phoneNumber3"],
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  launch("tel://${phoneNums["phoneNumber3"]}");
-                },
-              )
-            ],
+  Widget notifyMutationComponent() {
+    final appState = Provider.of<AppState>(context);
+    return Mutation(
+        options: MutationOptions(
+          document: fcmIntegerateToken,
+          context: {
+            'headers': <String, String>{
+              'Authorization': 'Bearer ${appState.jwtToken}',
+            },
+          },
+        ),
+        builder: (
+          RunMutation runMutation,
+          QueryResult result,
+        ) {
+          return InkWell(
+            onTap: () async {
+              final appState = Provider.of<AppState>(context);
+              final cartState = Provider.of<CartState>(context);
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              appState.clearApp();
+              cartState.clearCart();
+
+              runMutation({"fcmToken": null});
+
+              Fluttertoast.showToast(
+                  msg: "You've successfully logged out",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIos: 1,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Login()));
+            },
+            child: SettingsOption(
+              title: 'Log Out',
+              color: BLACK_COLOR,
+            ),
           );
-        }
-        return Container();
-      },
-    );
-  }
-
-  showAlertDialog(BuildContext context) {
-    SimpleDialog dialog = SimpleDialog(
-      contentPadding: EdgeInsets.all(24),
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16.0))),
-      title: Text('Choose a Number',
-          style: TextStyle(fontWeight: FontWeight.bold)),
-      children: <Widget>[
-        getVendorInfoQuery(),
-      ],
-    );
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return dialog;
-      },
-    );
+        },
+        update: (Cache cache, QueryResult result) {
+          return cache;
+        },
+        onCompleted: (dynamic resultData) async {});
   }
 }

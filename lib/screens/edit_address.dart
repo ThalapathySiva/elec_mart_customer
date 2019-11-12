@@ -4,6 +4,7 @@ import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
 import 'package:elec_mart_customer/screens/graphql/updateCustomerAddress.dart';
 import 'package:elec_mart_customer/screens/nav_screens.dart';
+import 'package:elec_mart_customer/service/FirebaseNotificationsHandler.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -190,6 +191,7 @@ class _EditAddressState extends State<EditAddress> {
       onCompleted: (dynamic resultData) async {
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('address', true);
+        handleNotify();
 
         Navigator.pushAndRemoveUntil(
             context,
@@ -197,5 +199,19 @@ class _EditAddressState extends State<EditAddress> {
             (v) => false);
       },
     );
+  }
+
+  handleNotify() {
+    final appState = Provider.of<AppState>(context);
+
+    final HttpLink httpLink = HttpLink(
+      uri: 'http://cezhop.herokuapp.com/graphql',
+    );
+    var graphQlClient = GraphQLClient(
+      cache: InMemoryCache(),
+      link: httpLink as Link,
+    );
+    FirebaseNotificationsHandler(
+        graphQLClient: graphQlClient, jwtToken: appState.jwtToken);
   }
 }
