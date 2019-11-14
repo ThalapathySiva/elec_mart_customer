@@ -112,7 +112,13 @@ class _CartState extends State<Cart> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               text("Total", 16, BLACK_COLOR, true),
-              text("Rs ${cartState.totalPrice}", 20, PRIMARY_COLOR, true)
+              text(
+                  cartState.totalPrice < 1500
+                      ? "Rs  ${cartState.totalPrice + 45}"
+                      : "Rs  ${cartState.totalPrice}",
+                  20,
+                  PRIMARY_COLOR,
+                  true)
             ],
           ),
           text(
@@ -326,6 +332,7 @@ class _CartState extends State<Cart> {
                     "cartItemIds": cartState.cartItems
                         .map((item) => item['itemId'])
                         .toList(),
+                    "additionalCharges": cartState.totalPrice < 1500 ? 45 : 0
                   });
                 },
               );

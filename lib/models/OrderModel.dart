@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:elec_mart_customer/models/VendorModel.dart';
 
@@ -14,6 +15,7 @@ class OrderModel {
   final DateTime datePlaced;
   final DateTime updatedDate;
   final String paymentMode;
+  final double additionalCharge;
   final VendorModel vendor;
   final double totalPrice;
   final int pinCode;
@@ -22,6 +24,7 @@ class OrderModel {
   OrderModel(
       {this.pinCode,
       this.paymentMode,
+      this.additionalCharge,
       this.id,
       this.totalPrice,
       this.orderNo,
@@ -38,6 +41,7 @@ class OrderModel {
     return OrderModel(
         id: json['id'],
         orderNo: json['orderNo'],
+        additionalCharge: json['additionalCharges']?.toDouble(),
         address: AddressModel.fromJson(jsonDecode(json['address'])),
         cartItems:
             cartItems.map((item) => CartItemModel.fromJson(item)).toList(),

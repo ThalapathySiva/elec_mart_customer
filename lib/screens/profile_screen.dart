@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:elec_mart_customer/components/primary_button.dart';
 import 'package:elec_mart_customer/components/setting_option.dart';
 import 'package:elec_mart_customer/components/teritory_button.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
@@ -14,7 +15,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'about_app.dart';
 import 'change_number.dart';
 import 'edit_address.dart';
 import 'edit_name.dart';
@@ -92,9 +92,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(padding: EdgeInsets.only(top: 10)),
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AboutApp()),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(24.0),
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        'About app',
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(color: PRIMARY_COLOR.withOpacity(0.75)),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(height: 16),
+                          Image.asset(
+                            'assets/images/flutter_logo.png',
+                            width: 150,
+                            height: 150,
+                          ),
+                          Text(
+                            '© BeShoppi 2019',
+                            style: TextStyle(
+                              color: BLACK_COLOR,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 16),
+                            width: MediaQuery.of(context).size.width,
+                            height: 0.5,
+                            color: PRIMARY_COLOR.withOpacity(0.7),
+                          ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset('assets/images/flutter_logo.png'),
+                                Container(width: 12),
+                                Text(
+                                  'Made with Flutter',
+                                  style: TextStyle(
+                                    color: PRIMARY_COLOR,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(height: 12),
+                          GestureDetector(
+                            onTap: () {
+                              launch(
+                                  'https://roshanrahman.github.io/emart-web/about.html');
+                            },
+                            child: Text(
+                              'About the developers',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: PRIMARY_COLOR,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 16),
+                            width: MediaQuery.of(context).size.width,
+                            height: 0.5,
+                            color: PRIMARY_COLOR.withOpacity(0.7),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 16),
+                            child: PrimaryButtonWidget(
+                              buttonText: 'Okay',
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
             },
             child: SettingsOption(

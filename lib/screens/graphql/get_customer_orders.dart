@@ -4,6 +4,7 @@ query GetCustomerOrders{
     orders{
       id
       orderNo
+      additionalCharges
       address
       customer{
         phoneNumber

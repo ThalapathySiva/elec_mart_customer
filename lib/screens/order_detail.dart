@@ -73,11 +73,30 @@ class _OrderDetailState extends State<OrderDetail> {
   Widget firstRow() {
     return Container(
       padding: EdgeInsets.all(24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          text("Order ID: BS${widget.order.orderNo}", 16, BLACK_COLOR, true),
-          text("Rs. ${widget.order.totalPrice}", 24, PRIMARY_COLOR, true),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              text(
+                  "Order ID: BS${widget.order.orderNo}", 16, BLACK_COLOR, true),
+              text(
+                  widget.order.additionalCharge != 0
+                      ? "Rs. ${widget.order.totalPrice + 45}"
+                      : "Rs. ${widget.order.totalPrice}",
+                  24,
+                  PRIMARY_COLOR,
+                  true),
+            ],
+          ),
+          text(
+              widget.order.additionalCharge == 0
+                  ? "Free Shipping"
+                  : "(Shipping charge Rs 45)",
+              16,
+              RED_COLOR,
+              true),
         ],
       ),
     );

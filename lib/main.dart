@@ -39,6 +39,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     uri: 'http://cezhop.herokuapp.com/graphql',
   );
   bool isAuthenticated = false, isAddressGave = false;
+
+
+  
   @override
   void initState() {
     _getPref();
