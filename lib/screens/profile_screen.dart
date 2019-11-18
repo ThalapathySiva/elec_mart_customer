@@ -107,8 +107,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: Text(
                         'About app',
                         textAlign: TextAlign.center,
-                        style:
-                            TextStyle(color: PRIMARY_COLOR.withOpacity(0.75)),
+                        style: TextStyle(
+                            color: PRIMARY_COLOR.withOpacity(0.75),
+                            fontWeight: FontWeight.bold),
                       ),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -124,6 +125,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: TextStyle(
                               color: BLACK_COLOR,
                               fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'version 1.0',
+                            style: TextStyle(
+                              color: BLACK_COLOR,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

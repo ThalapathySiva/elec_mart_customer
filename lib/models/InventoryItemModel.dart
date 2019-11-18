@@ -39,18 +39,28 @@ class InventoryItemModel {
         name: json['name'],
         id: json['id'],
         description: json['description'],
-        originalPrice: json['originalPrice'].toDouble(),
-        sellingPrice: json['sellingPrice'].toDouble(),
+        originalPrice: json['originalPrice'] != null
+            ? double.parse(json['originalPrice'].toString())
+            : null,
+        sellingPrice: json['sellingPrice'] != null
+            ? double.parse(json['sellingPrice'].toString())
+            : null,
         category: json['category'],
-        length: json['length']?.toDouble(),
-        breadth: json['breadth']?.toDouble(),
-        height: json['height']?.toDouble(),
+        length: json['length'] != null
+            ? double.parse(json['length'].toString())
+            : null,
+        breadth: json['breadth'] != null
+            ? double.parse(json['breadth'].toString())
+            : null,
+        height: json['height'] != null
+            ? double.parse(json['height'].toString())
+            : null,
         deleted: json['deleted'] == false ? false : true,
         date: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['date']) * 1000,
         ),
         images: jsonDecode(json['imageUrl']),
-        inStock: json['inStock'].toDouble(),
+        inStock: json['inStock']?.toDouble(),
         vendor: json['vendor'] == null
             ? null
             : VendorModel?.fromJson(json['vendor']));

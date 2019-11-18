@@ -194,7 +194,7 @@ class _FilterModalState extends State<FilterModal>
             'Authorization': 'Bearer ${appState.jwtToken}',
           },
         },
-        pollInterval: 2,
+        pollInterval: 30,
       ),
       builder: (QueryResult result, {VoidCallback refetch}) {
         if (result.loading) return Center(child: CupertinoActivityIndicator());

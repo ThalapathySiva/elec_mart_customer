@@ -91,8 +91,8 @@ class _OrdersState extends State<Orders> {
             children: <Widget>[
               SizedBox(height: 50),
               Image.asset("assets/images/cactus.png", height: 256, width: 256),
-              text("We don't here yet !", 30, PRIMARY_COLOR.withOpacity(0.3),
-                  false),
+              text("We don't deliver here yet !", 30,
+                  PRIMARY_COLOR.withOpacity(0.3), false),
               SizedBox(height: 20),
               Text(
                 "Soonly we will be.",
@@ -261,86 +261,96 @@ class _OrdersState extends State<Orders> {
 
   Widget previousOrdersList(List<OrderModel> orders) {
     return ListView.separated(
-      separatorBuilder: (context, index) => SizedBox(height: 10),
-      shrinkWrap: true,
-      physics: ScrollPhysics(),
-      itemCount: orders.length,
-      itemBuilder: (context, index) => Container(
-        padding: EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            color: LIGHT_BLUE_COLOR.withOpacity(0.03)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            OrderDetail(order: orders[index])));
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
+        separatorBuilder: (context, index) => SizedBox(height: 10),
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          int cartItemsAvailable = orders[index]
+              .cartItems
+              .where((item) =>
+                  item.inventory.inStock != null &&
+                  item.inventory.inStock > 0 &&
+                  !item.inventory.deleted)
+              .toList()
+              .length;
+          return Container(
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                color: LIGHT_BLUE_COLOR.withOpacity(0.03)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                OrderDetail(order: orders[index])));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          text("Order ID: BS${orders[index].orderNo}", 16,
+                              BLACK_COLOR, true),
+                          text(
+                              orders[index].additionalCharge != 0
+                                  ? "Rs. ${orders[index].totalPrice + 45}"
+                                  : "Rs. ${orders[index].totalPrice}",
+                              16,
+                              PRIMARY_COLOR,
+                              true)
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      text("${orders[index].cartItems.length} items", 14,
+                          BLACK_COLOR, false),
+                      SizedBox(height: 10),
+                      OrderStatusIndicatorWidget(
+                        orderStatus: orders[index].status.toUpperCase(),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          text("${orders[index].paymentMode}", 14,
+                              PRIMARY_COLOR, true),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (orders[index].paymentMode != "Cash On Delivery")
+                  Divider(thickness: 1, height: 10),
+                if (orders[index].paymentMode != "Cash On Delivery")
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      text("Order ID: BS${orders[index].orderNo}", 16,
-                          BLACK_COLOR, true),
-                      text(
-                          orders[index].additionalCharge != 0
-                              ? "Rs. ${orders[index].totalPrice + 45}"
-                              : "Rs. ${orders[index].totalPrice}",
-                          16,
-                          PRIMARY_COLOR,
-                          true)
+                      if (orders[index].paymentMode != "Cash On Delivery")
+                        text(
+                            orders[index].transactionSuccess
+                                ? "Transaction Success"
+                                : "Transaction Failed",
+                            14,
+                            orders[index].transactionSuccess
+                                ? Colors.green
+                                : Colors.red,
+                            true),
+                      Spacer(),
+                      if (orders[index].transactionSuccess == false &&
+                          cartItemsAvailable == orders[index].cartItems.length)
+                        tryAgain(orders[index].id)
                     ],
                   ),
-                  SizedBox(height: 5),
-                  text("${orders[index].cartItems.length} items", 14,
-                      BLACK_COLOR, false),
-                  SizedBox(height: 10),
-                  OrderStatusIndicatorWidget(
-                    orderStatus: orders[index].status.toUpperCase(),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      text("${orders[index].paymentMode}", 14, PRIMARY_COLOR,
-                          true),
-                    ],
-                  ),
-                ],
-              ),
+              ],
             ),
-            if (orders[index].paymentMode != "Cash On Delivery")
-              Divider(thickness: 1, height: 10),
-            if (orders[index].paymentMode != "Cash On Delivery")
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  if (orders[index].paymentMode != "Cash On Delivery")
-                    text(
-                        orders[index].transactionSuccess
-                            ? "Transaction Success"
-                            : "Transaction Failed",
-                        14,
-                        orders[index].transactionSuccess
-                            ? Colors.green
-                            : Colors.red,
-                        true),
-                  Spacer(),
-                  if (orders[index].transactionSuccess == false)
-                    tryAgain(orders[index].id)
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget tryAgain(String id) {

@@ -5,6 +5,7 @@ query GetCustomerOrders{
       id
       orderNo
       additionalCharges
+      cancelledReason
       address
       customer{
         phoneNumber

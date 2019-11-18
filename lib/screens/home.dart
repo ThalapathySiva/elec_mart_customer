@@ -33,7 +33,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isGrid = true;
   String selectedCategory = "All";
+  final ctrl = ScrollController();
+
+  int pageNumber = 1;
   final searchTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ctrl.addListener(() {
+      print("hfjh");
+      print(ctrl.position.maxScrollExtent);
+      print(ctrl.position.pixels);
+      if (ctrl.position.maxScrollExtent - ctrl.position.pixels <= 200) {
+        setState(() => pageNumber++);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               SizedBox(height: 50),
               Image.asset("assets/images/cactus.png", height: 256, width: 256),
-              text("We don't here yet !", 30, PRIMARY_COLOR.withOpacity(0.3),
-                  false),
+              text("We don't deliver here yet !", 30,
+                  PRIMARY_COLOR.withOpacity(0.3), false),
               SizedBox(height: 20),
               Text(
                 "Why don't you explore a different location?",
@@ -172,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return GridView.builder(
       shrinkWrap: true,
+      controller: ctrl,
       physics: ScrollPhysics(),
       itemCount: filteredInventory.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -325,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Authorization': 'Bearer ${appState.jwtToken}',
           },
         },
-        pollInterval: 2,
+        pollInterval: 20,
       ),
       builder: (QueryResult result, {VoidCallback refetch}) {
         if (result.loading) return Center(child: CupertinoActivityIndicator());
@@ -333,11 +350,14 @@ class _HomeScreenState extends State<HomeScreen> {
           return Center(child: Text("Oops something went wrong"));
         if (result.data != null && result.data['getAllInventory'] != null) {
           List inventoryList = result.data['getAllInventory']['inventory'];
+
           List<InventoryItemModel> inventories;
           if (inventoryList != null) {
-            inventories = inventoryList
+            List sliceList = inventoryList.sublist(0, pageNumber * 50);
+            inventories = sliceList
                 .map((item) => InventoryItemModel.fromJson(item))
                 .toList();
+            print(inventories.length);
             if (appState.getsortType == 'Price (low to high)') {
               inventories
                   .sort((a, b) => a.sellingPrice.compareTo(b.sellingPrice));
@@ -502,5 +522,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _items(List<InventoryItemModel> inventories) {
     if (inventories == null) return Container();
     return isGrid ? gridView(inventories) : listView(inventories);
+  }
+
+  @override
+  void dispose() {
+    ctrl.dispose();
+    super.dispose();
   }
 }

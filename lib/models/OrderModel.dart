@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:elec_mart_customer/models/VendorModel.dart';
 
@@ -18,6 +17,7 @@ class OrderModel {
   final double additionalCharge;
   final VendorModel vendor;
   final double totalPrice;
+  final String cancelledReason;
   final int pinCode;
   final bool transactionSuccess;
 
@@ -27,6 +27,7 @@ class OrderModel {
       this.additionalCharge,
       this.id,
       this.totalPrice,
+      this.cancelledReason,
       this.orderNo,
       this.address,
       this.cartItems,
@@ -41,7 +42,10 @@ class OrderModel {
     return OrderModel(
         id: json['id'],
         orderNo: json['orderNo'],
-        additionalCharge: json['additionalCharges']?.toDouble(),
+        cancelledReason: json['cancelledReason'],
+        additionalCharge: json['additionalCharges'] != null
+            ? double.parse(json['additionalCharges'].toString())
+            : null,
         address: AddressModel.fromJson(jsonDecode(json['address'])),
         cartItems:
             cartItems.map((item) => CartItemModel.fromJson(item)).toList(),
@@ -52,7 +56,9 @@ class OrderModel {
         updatedDate: DateTime.fromMicrosecondsSinceEpoch(
           int.parse(json['updatedDate']) * 1000,
         ),
-        totalPrice: json["totalPrice"].toDouble(),
+        totalPrice: json["totalPrice"] != null
+            ? double.parse(json['totalPrice'].toString())
+            : null,
         paymentMode: json["paymentMode"],
         transactionSuccess: json['transactionSuccess'],
         vendor: json["vendor"] != null

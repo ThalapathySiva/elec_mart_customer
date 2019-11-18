@@ -130,7 +130,10 @@ class _OrderDetailState extends State<OrderDetail> {
               StringResolver.getTextForOrderStatus(status: widget.order.status),
               14,
               BLACK_COLOR,
-              false),
+              true),
+          SizedBox(height: 5),
+          if (widget.order.cancelledReason != null)
+            text("(${widget.order.cancelledReason})", 14, BLACK_COLOR, true)
         ],
       ),
     );
