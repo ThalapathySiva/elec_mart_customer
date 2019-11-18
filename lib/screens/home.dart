@@ -33,23 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isGrid = true;
   String selectedCategory = "All";
-  final ctrl = ScrollController();
-
-  int pageNumber = 1;
   final searchTextController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    ctrl.addListener(() {
-      print("hfjh");
-      print(ctrl.position.maxScrollExtent);
-      print(ctrl.position.pixels);
-      if (ctrl.position.maxScrollExtent - ctrl.position.pixels <= 200) {
-        setState(() => pageNumber++);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +172,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return GridView.builder(
       shrinkWrap: true,
-      controller: ctrl,
       physics: ScrollPhysics(),
       itemCount: filteredInventory.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -353,11 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
           List<InventoryItemModel> inventories;
           if (inventoryList != null) {
-            List sliceList = inventoryList.sublist(0, pageNumber * 50);
-            inventories = sliceList
+            inventories = inventoryList
                 .map((item) => InventoryItemModel.fromJson(item))
                 .toList();
-            print(inventories.length);
             if (appState.getsortType == 'Price (low to high)') {
               inventories
                   .sort((a, b) => a.sellingPrice.compareTo(b.sellingPrice));
@@ -522,11 +503,5 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _items(List<InventoryItemModel> inventories) {
     if (inventories == null) return Container();
     return isGrid ? gridView(inventories) : listView(inventories);
-  }
-
-  @override
-  void dispose() {
-    ctrl.dispose();
-    super.dispose();
   }
 }
