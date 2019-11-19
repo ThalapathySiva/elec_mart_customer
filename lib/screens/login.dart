@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
 
   Widget login() {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.only(left: 24, right: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

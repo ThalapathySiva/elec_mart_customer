@@ -116,9 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: <Widget>[
                           Container(height: 16),
                           Image.asset(
-                            'assets/images/flutter_logo.png',
-                            width: 150,
-                            height: 150,
+                            'assets/images/dark_logo.png',
+                            height: 200,
                           ),
                           Text(
                             '© BeShoppi 2019',
