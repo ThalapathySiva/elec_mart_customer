@@ -3,8 +3,8 @@ import 'package:elec_mart_customer/components/category.dart';
 import 'package:elec_mart_customer/components/drop_down_widget.dart';
 import 'package:elec_mart_customer/components/text_field.dart';
 import 'package:elec_mart_customer/constants/Colors.dart';
-import 'package:elec_mart_customer/models/InventoryItemModel.dart';
-import 'package:elec_mart_customer/screens/graphql/getAllInventory.dart';
+import 'package:elec_mart_customer/models/CategoriesModel.dart';
+import 'package:elec_mart_customer/screens/graphql/categories.dart';
 import 'package:elec_mart_customer/state/app_state.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,9 +26,6 @@ class _FilterModalState extends State<FilterModal>
     with SingleTickerProviderStateMixin {
   bool isExpanded = false;
   bool isFilter = false;
-
-  List<String> categories = ["All"];
-  List<String> categoryImages = [""];
 
   AnimationController animationController;
   Animation<Offset> animationOffset;
@@ -58,7 +55,7 @@ class _FilterModalState extends State<FilterModal>
               height: 260,
               width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.all(10),
-              child: isFilter ? filterColumn() : getInventoryQuery(),
+              child: isFilter ? filterColumn() : getCategoryQuery(),
             ),
           ),
           CustomAppBar(
@@ -183,12 +180,12 @@ class _FilterModalState extends State<FilterModal>
     );
   }
 
-  Widget getInventoryQuery({bool category = false}) {
+  Widget getCategoryQuery({bool category = false}) {
     final appState = Provider.of<AppState>(context);
     return Query(
       options: QueryOptions(
         fetchPolicy: FetchPolicy.noCache,
-        document: getAllInventory,
+        document: getCategories,
         context: {
           'headers': <String, String>{
             'Authorization': 'Bearer ${appState.jwtToken}',
@@ -200,32 +197,24 @@ class _FilterModalState extends State<FilterModal>
         if (result.loading) return Center(child: CupertinoActivityIndicator());
         if (result.hasErrors)
           return Center(child: Text("Oops something went wrong"));
-        if (result.data != null && result.data['getAllInventory'] != null) {
-          List inventoryList = result.data['getAllInventory']['inventory'];
-          List<InventoryItemModel> inventories;
-          if (inventoryList != null) {
-            inventories = inventoryList
-                .map((item) => InventoryItemModel.fromJson(item))
-                .toList();
+        if (result.data != null && result.data['getCategories'] != null) {
+          List categoryList = result.data['getCategories'];
+          List<CategoriesModel> categories;
 
-            // categories =
-            //     inventories.map((item) => item.category).toSet().toList();
+          categories = categoryList
+              .map((item) => CategoriesModel.fromJson(item))
+              .toList();
 
-            inventories.forEach((item) {
-              if (!categories.contains(item.category)) {
-                categories.add(item.category);
-                categoryImages.add(item.images[0]);
-              }
-            });
-          }
-          return categoryColumn([...categories], [...categoryImages]);
+          categories.insert(0, CategoriesModel(image: "", name: "All"));
+
+          return categoryColumn(categories);
         }
         return Container();
       },
     );
   }
 
-  Widget categoryColumn(List<String> categories, List<String> categoryImages) {
+  Widget categoryColumn(List<CategoriesModel> categories) {
     return Container(
       width: 150,
       margin: EdgeInsets.only(top: 45),
@@ -238,15 +227,15 @@ class _FilterModalState extends State<FilterModal>
         itemCount: categories.length,
         itemBuilder: (context, index) => InkWell(
             onTap: () {
-              widget.onCategoryChange(categories[index]);
+              widget.onCategoryChange(categories[index].name);
               isExpanded = false;
               isFilter = false;
               animationController.reverse();
             },
             child: Category(
-                categoryImage: categoryImages[index],
-                name: categories[index],
-                selected: widget.selectedCategory == categories[index])),
+                categoryImage: categories[index].image,
+                name: categories[index].name,
+                selected: widget.selectedCategory == categories[index].name)),
       ),
     );
   }

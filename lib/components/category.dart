@@ -51,8 +51,7 @@ class Category extends StatelessWidget {
                         )),
           Text("$name",
               style: TextStyle(
-                  color:
-                      selected ? PRIMARY_COLOR : GREY_COLOR.withOpacity(0.3),
+                  color: selected ? PRIMARY_COLOR : GREY_COLOR.withOpacity(0.3),
                   fontSize: 12,
                   fontWeight: FontWeight.bold))
         ],
