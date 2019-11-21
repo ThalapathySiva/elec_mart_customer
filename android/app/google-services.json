@@ -8,6 +8,72 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:302571742479:android:956f145e6fd56c10d8ca7a",
+        "android_client_info": {
+          "package_name": "com.beshoppi.elec_mart_customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302571742479-ofbss49q232jdgbsqc5jemrodr4s1bob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMCK3tzY0YVmKBQn6nTYvJOc0Uqg5sRhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302571742479-ofbss49q232jdgbsqc5jemrodr4s1bob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302571742479:android:2d09a39dd133fe92d8ca7a",
+        "android_client_info": {
+          "package_name": "com.beshoppi.electronic_emart_vendor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302571742479-3vkotvcod7reso4q6udbvrna9nokroud.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beshoppi.electronic_emart_vendor",
+            "certificate_hash": "0c1119c5edfa04f880562a4fc44e5a90a3d5d9f2"
+          }
+        },
+        {
+          "client_id": "302571742479-ofbss49q232jdgbsqc5jemrodr4s1bob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMCK3tzY0YVmKBQn6nTYvJOc0Uqg5sRhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302571742479-ofbss49q232jdgbsqc5jemrodr4s1bob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:302571742479:android:e42e9a634a9b039f",
         "android_client_info": {
           "package_name": "com.example.elec_mart_customer"

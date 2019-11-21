@@ -32,14 +32,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Image.asset(
-                "assets/images/flutter_logo.png",
-                height: 30,
-                width: 30,
-              ),
-            ),
+            Container(height: 30, width: 30),
             GestureDetector(
               onTap: widget.onCategoryPressed,
               child: Row(

@@ -1,4 +1,4 @@
-package com.example.elec_mart_customer;
+package com.beshoppi.elec_mart_customer;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
